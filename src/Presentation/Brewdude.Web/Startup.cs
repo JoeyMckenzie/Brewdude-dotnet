@@ -10,6 +10,7 @@ using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
 using Brewdude.Application.Infrastructure;
 using Brewdude.Application.Infrastructure.AutoMapper;
+using Brewdude.Application.Security;
 using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
@@ -62,7 +63,6 @@ namespace Brewdude.Web
 
             // Add services
             services.AddAutoMapper(typeof(MappingProfile).GetTypeInfo().Assembly);
-            services.AddScoped<IUserPasswordService, UserPasswordService>();
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<ITokenService>(_ => new TokenService(_jwtSecret));
             

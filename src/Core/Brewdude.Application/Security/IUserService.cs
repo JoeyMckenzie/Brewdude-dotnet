@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Brewdude.Jwt.Models;
+using Brewdude.Application.User.Commands.Models;
 
-namespace Brewdude.Jwt.Services
+namespace Brewdude.Application.Security
 {
     public interface IUserService
     {

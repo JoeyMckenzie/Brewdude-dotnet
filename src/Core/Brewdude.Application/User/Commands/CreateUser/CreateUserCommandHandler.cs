@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
+using Brewdude.Application.Security;
 using Brewdude.Application.User.Commands.Models;
-using Brewdude.Jwt.Services;
 using Brewdude.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,14 +14,14 @@ namespace Brewdude.Application.User.Commands.CreateUser
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserViewModel>
     {
         private readonly BrewdudeDbContext _context;
-        private readonly IUserPasswordService _userPasswordService;
+        private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
 
-        public CreateUserCommandHandler(BrewdudeDbContext context, IUserPasswordService userPasswordService, IMapper mapper, ITokenService tokenService)
+        public CreateUserCommandHandler(BrewdudeDbContext context, IUserService userService, IMapper mapper, ITokenService tokenService)
         {
             _context = context;
-            _userPasswordService = userPasswordService;
+            _userService = userService;
             _mapper = mapper;
             _tokenService = tokenService;
         }
@@ -33,7 +33,7 @@ namespace Brewdude.Application.User.Commands.CreateUser
             if (existingUser != null)
                 throw new UserCreationException($"User with username [{request.Username}] already exists");
             
-            _userPasswordService.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            _userService.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             if (passwordHash == null || passwordHash.Length != 64 &&
                     passwordSalt == null || passwordSalt.Length != 128)

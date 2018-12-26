@@ -1,10 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Brewdude.Application.Security;
 using Brewdude.Jwt.Models;
 using Brewdude.Persistence;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using UserViewModel = Brewdude.Application.User.Commands.Models.UserViewModel;
 
 namespace Brewdude.Jwt.Services
 {
