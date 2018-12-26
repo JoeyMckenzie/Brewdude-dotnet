@@ -27,7 +27,7 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
             var beers = await _context.Beers
                 .OrderBy(b => b.Name)
                 .ToListAsync(cancellationToken);
-
+    
             var model = new BeerListViewModel
             {
                 Beers = _mapper.Map<IEnumerable<BeerDto>>(beers)

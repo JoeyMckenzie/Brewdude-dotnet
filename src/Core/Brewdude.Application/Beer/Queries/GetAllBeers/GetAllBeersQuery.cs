@@ -5,6 +5,5 @@ namespace Brewdude.Application.Beer.GetAllBeers.Queries
 {
     public class GetAllBeersQuery : IRequest<BeerListViewModel>
     {
-        
     }
 }

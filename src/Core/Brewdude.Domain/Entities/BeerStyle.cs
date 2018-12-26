@@ -2,7 +2,7 @@ namespace Brewdude.Domain.Entities
 {
     public enum BeerStyle
     {
-        Pilsner,
+        Pilsner = 1,
         Lager,
         PaleAle,
         Ipa,
