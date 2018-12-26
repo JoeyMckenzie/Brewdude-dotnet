@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Brewdude.Jwt\Brewdude.Jwt.csproj" />
+    <ProjectReference Include="..\..\Security\Brewdude.Jwt\Brewdude.Jwt.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Brewdude.Persistence\Brewdude.Persistence.csproj" />
     <ProjectReference Include="..\Brewdude.Domain\Brewdude.Domain.csproj" />
   </ItemGroup>

@@ -6,16 +6,16 @@
 
     <ItemGroup>
       <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-        <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\microsoft.identitymodel.tokens\5.3.0\lib\netstandard2.0\Microsoft.IdentityModel.Tokens.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\microsoft.identitymodel.tokens\5.3.0\lib\netstandard2.0\Microsoft.IdentityModel.Tokens.dll</HintPath>
       </Reference>
       <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-        <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\system.identitymodel.tokens.jwt\5.3.0\lib\netstandard2.0\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+        <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\sdk\NuGetFallbackFolder\system.identitymodel.tokens.jwt\5.3.0\lib\netstandard2.0\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       </Reference>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Core\Brewdude.Domain\Brewdude.Domain.csproj" />
-      <ProjectReference Include="..\Infrastructure\Brewdude.Persistence\Brewdude.Persistence.csproj" />
+      <ProjectReference Include="..\..\Core\Brewdude.Domain\Brewdude.Domain.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\Brewdude.Persistence\Brewdude.Persistence.csproj" />
     </ItemGroup>
 
     <ItemGroup>
