@@ -8,6 +8,9 @@ using Brewdude.Application.Beer.Commands.UpdateBeer;
 using Brewdude.Application.Beer.GetAllBeers.Queries;
 using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
+using Brewdude.Application.Brewery.Commands.CreateBrewery;
+using Brewdude.Application.Brewery.Commands.DeleteBrewery;
+using Brewdude.Application.Brewery.Commands.UpdateBrewery;
 using Brewdude.Application.Brewery.Queries.GetAllBreweries;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Brewdude.Application.Infrastructure;
@@ -62,6 +65,8 @@ namespace Brewdude.Web
                 typeof(GetAllBreweriesQueryHandler).GetTypeInfo().Assembly,
                 typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
                 typeof(CreateUserCommandHandler).GetTypeInfo().Assembly,
+                typeof(UpdateBreweryCommandHandler).GetTypeInfo().Assembly,
+                typeof(DeleteBreweryCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetUserByIdCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetUserByUsernameCommandHandler).GetTypeInfo().Assembly
             };
@@ -74,7 +79,7 @@ namespace Brewdude.Web
             // Add EF Core
             _connectionString = Configuration["ConnectionString"];
             services.AddDbContext<BrewdudeDbContext>(options =>
-                options.UseSqlServer(_connectionString));
+                options.UseSqlServer(Configuration.GetConnectionString("Brewdude")));
 
             // Add MediatR
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
@@ -123,7 +128,14 @@ namespace Brewdude.Web
                 options.AddPolicy("BrewdudeUserPolicy", policyBuilder =>
                 {
                     policyBuilder.RequireAuthenticatedUser();
-                    policyBuilder.RequireRole("User");
+                    policyBuilder.RequireRole("User", "Admin");
+                    policyBuilder.RequireClaim("username");
+                    policyBuilder.RequireClaim("scopes", "read:brewery", "read:brewery");
+                });
+                options.AddPolicy("BrewdudeAdminPolicy", policyBuilder =>
+                {
+                    policyBuilder.RequireAuthenticatedUser();
+                    policyBuilder.RequireRole("Admin");
                     policyBuilder.RequireClaim("username");
                     policyBuilder.RequireClaim("scopes", "read:brewery", "read:brewery", "write:beer", "write:brewery");
                 });
@@ -137,6 +149,8 @@ namespace Brewdude.Web
                 {
                     fv.RegisterValidatorsFromAssemblyContaining<CreateBeerCommandValidator>();
                     fv.RegisterValidatorsFromAssemblyContaining<UpdateBeerCommandValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<CreateBreweryCommandValidator>();
+                    fv.RegisterValidatorsFromAssemblyContaining<UpdateBreweryCommandValidator>();
                     fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
                     fv.RegisterValidatorsFromAssemblyContaining<GetUserByUsernameCommandValidator>();
                 });

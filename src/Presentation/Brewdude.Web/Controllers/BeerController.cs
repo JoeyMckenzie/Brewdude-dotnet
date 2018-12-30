@@ -14,7 +14,7 @@ using Serilog;
 
 namespace Brewdude.Web.Controllers
 {
-        [Authorize(Policy = "BrewdudeUserPolicy")]
+    [Authorize(Policy = "BrewdudeUserPolicy")]
     public class BeerController : BrewdudeControllerBase
     {
         private readonly ILogger<BeerController> _logger;
@@ -27,13 +27,15 @@ namespace Brewdude.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<BeerListViewModel>> GetAll()
         {
-            _logger.LogInformation("Test");
+            _logger.LogInformation("Retrieving all beers");
             return Ok(await Mediator.Send(new GetAllBeersQuery()));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<BeerViewModel>> GetById(int id)
         {
+            _logger.LogInformation($"Retrieving beer [{id}]");
+            
             try
             {
                 var beer = await Mediator.Send(new GetBeerByIdQuery(id));
@@ -48,13 +50,15 @@ namespace Brewdude.Web.Controllers
         [HttpPost]
         public async Task<ActionResult<int>> CreateBeer([FromBody] CreateBeerCommand createBeerCommand)
         {
-            Log.Information("CreateBeer test");
+            _logger.LogInformation($"Creating beer [{createBeerCommand.Name}]");
             return Ok(await Mediator.Send(createBeerCommand));
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBeer(int id, [FromBody] UpdateBeerCommand updateBeerCommand)
         {
+            _logger.LogInformation($"Updating beer [{id}]");
+            
             try
             {
                 updateBeerCommand.BeerId = id;
@@ -70,6 +74,8 @@ namespace Brewdude.Web.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBeer(int id)
         {
+            _logger.LogInformation($"Deleting beer [{id}]");
+
             try
             {
                 var result = await Mediator.Send(new DeleteBeerCommand(id));

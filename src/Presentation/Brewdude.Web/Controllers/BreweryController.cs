@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Brewdude.Application.Brewery.Commands.CreateBrewery;
+using Brewdude.Application.Brewery.Commands.DeleteBrewery;
+using Brewdude.Application.Brewery.Commands.UpdateBrewery;
 using Brewdude.Application.Brewery.Queries.GetAllBreweries;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Microsoft.AspNetCore.Authorization;
@@ -43,10 +45,33 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateBrewery([FromBody] CreateBreweryCommand createBreweryCommand)
+        public async Task<ActionResult<int>> CreateBrewery([FromBody] CreateBreweryCommand createBreweryCommand)
         {
             _logger.LogInformation($"Creating brewery for request [{createBreweryCommand.Name}]");
             return Ok(await Mediator.Send(createBreweryCommand));
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateBrewery(int id, [FromBody] UpdateBreweryCommand updateBreweryCommand)
+        {
+            _logger.LogInformation($"Updating brewery [{id}]");
+
+            try
+            {
+                updateBreweryCommand.BreweryId = id;
+                return Ok(await Mediator.Send(updateBreweryCommand));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteBeer(int id)
+        {
+            _logger.LogInformation($"Deleting brewery [{id}]");
+            return Ok(await Mediator.Send(new DeleteBreweryCommand(id)));
         }
     }
 }

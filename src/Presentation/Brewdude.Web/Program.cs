@@ -44,10 +44,14 @@ namespace Brewdude.Web
                             const string dropBreweries = "DROP TABLE Breweries;";
                             const string dropUsers = "DROP TABLE Users;";
                             const string dropMigrations = "DROP TABLE __EFMigrationsHistory;";
+                            const string dropUserBeers = "DROP TABLE UserBeers;";
+                            const string dropUserBreweries = "DROP TABLE UserBreweries;";
                             context.Database.ExecuteSqlCommand(dropBeers);
                             context.Database.ExecuteSqlCommand(dropBreweries);
                             context.Database.ExecuteSqlCommand(dropUsers);
                             context.Database.ExecuteSqlCommand(dropMigrations);
+                            context.Database.ExecuteSqlCommand(dropUserBeers);
+                            context.Database.ExecuteSqlCommand(dropUserBreweries);
                         }
 
                         context.Database.Migrate();

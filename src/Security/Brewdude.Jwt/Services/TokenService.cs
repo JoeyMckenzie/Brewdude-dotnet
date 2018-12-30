@@ -97,7 +97,7 @@ namespace Brewdude.Jwt.Services
             {
                 return new ClaimsIdentity(new[]
                 {
-                    new Claim("userId", user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserId.ToString()),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.UserData, user.Username),
                     new Claim(ClaimTypes.UserData, user.FirstName),
@@ -113,7 +113,7 @@ namespace Brewdude.Jwt.Services
             
             return new ClaimsIdentity(new[]
             {
-                new Claim("userId", user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.UserData, user.Username),
                 new Claim(ClaimTypes.UserData, user.FirstName),

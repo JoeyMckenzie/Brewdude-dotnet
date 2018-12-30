@@ -43,6 +43,8 @@ namespace Brewdude.Persistence
         {
             SeedBreweries(context);
             SeedBeers(context);
+            SeedUserBeers(context);
+            SeedUserBreweries(context);
         }
 
         private void SeedBeers(BrewdudeDbContext context)
@@ -111,26 +113,27 @@ namespace Brewdude.Persistence
             context.SaveChanges();
         }
 
-//        private void SeedBreweryIdOnBeersTable(BrewdudeDbContext context)
-//        {
-//           UpdateBreweryIdFromBeerAndBreweryName("Hexagenia", "Fall River Brewery", context);            
-//           UpdateBreweryIdFromBeerAndBreweryName("Lazy Hazy", "Fall River Brewery", context);            
-//           UpdateBreweryIdFromBeerAndBreweryName("Sierra Nevada Pale Ale", "Sierra Nevada Brewing Company", context);            
-//           UpdateBreweryIdFromBeerAndBreweryName("Hoppy Lager", "Sudwerk Brewing Company", context);            
-//        }
-//
-//        private void UpdateBreweryIdFromBeerAndBreweryName(string beerName, string breweryName, BrewdudeDbContext context)
-//        {
-//            var beer = context.Beers.FirstOrDefault(b => b.Name == beerName);
-//            var brewery = context.Breweries.FirstOrDefault(b => b.Name == breweryName);
-//
-//            if (brewery != null && beer != null)
-//            {
-//                var beerId = new SqlParameter("BeerId", beer.BeerId);                
-//                var breweryId = new SqlParameter("BreweryId", brewery.BreweryId);
-//                context.Database.ExecuteSqlCommand("UPDATE Beers SET BreweryID = @BreweryId WHERE BeerId = @BeerId", beerId, breweryId);
-//                context.SaveChanges();
-//            }
-//        }
+        private void SeedUserBeers(BrewdudeDbContext context)
+        {
+            var userBeers = new[]
+            {
+                new UserBeers { UserId = 1, BeerId = 1 },
+                new UserBeers { UserId = 1, BeerId = 3 }
+            };
+            
+            context.UserBeers.AddRange(userBeers);
+            context.SaveChanges();
+        }
+
+        private void SeedUserBreweries(BrewdudeDbContext context)
+        {
+            var userBreweries = new[]
+            {
+                new UserBreweries { UserId = 1, BreweryId = 2 }
+            };
+            
+            context.UserBreweries.AddRange(userBreweries);
+            context.SaveChanges();
+        }
     }
 }
