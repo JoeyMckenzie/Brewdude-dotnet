@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>Brewdude.Application</AssemblyName>
-    <RootNamespace>Brewdude.Applicaio</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Brewery" />
     <Folder Include="Infrastructure\Interfaces" />
   </ItemGroup>
 

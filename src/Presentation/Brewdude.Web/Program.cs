@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using Brewdude.Persistence;
@@ -25,25 +26,41 @@ namespace Brewdude.Web
                 .CreateLogger();
 
             var host = CreateWebHostBuilder(args).Build();
-            
-            // Seed database
-            using (var scope = host.Services.CreateScope())
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            if (!string.IsNullOrWhiteSpace(environment) && environment.Equals("Development"))
             {
-                try
+                // Seed database
+                using (var scope = host.Services.CreateScope())
                 {
-                    var context = scope.ServiceProvider.GetService<BrewdudeDbContext>();
-                    context.Database.Migrate();
-                    
-                    if (!context.Beers.Any() && !context.Breweries.Any())
+                    try
+                    {
+                        var context = scope.ServiceProvider.GetService<BrewdudeDbContext>();
+
+                        // Drop the tables to recreate them with fresh data every server re-roll
+                        if (BrewdudeDbInitializer.TablesExist(context))
+                        {
+                            const string dropBeers = "DROP TABLE Beers;";
+                            const string dropBreweries = "DROP TABLE Breweries;";
+                            const string dropUsers = "DROP TABLE Users;";
+                            const string dropMigrations = "DROP TABLE __EFMigrationsHistory;";
+                            context.Database.ExecuteSqlCommand(dropBeers);
+                            context.Database.ExecuteSqlCommand(dropBreweries);
+                            context.Database.ExecuteSqlCommand(dropUsers);
+                            context.Database.ExecuteSqlCommand(dropMigrations);
+                        }
+
+                        context.Database.Migrate();
                         BrewdudeDbInitializer.Initialize(context);
-                }
-                catch (Exception e)
-                {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(e, "Could not seed database");
+                    }
+                    catch (Exception e)
+                    {
+                        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(e, "Could not seed database");
+                    }
                 }
             }
-            
+
             try
             {
                 host.Run();

@@ -1,6 +1,7 @@
 using AutoMapper;
 using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
+using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Brewdude.Application.User.Commands.Models;
 
 namespace Brewdude.Application.Infrastructure.AutoMapper
@@ -16,6 +17,8 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
             CreateMap<Domain.Entities.User, UserViewModel>();
             CreateMap<BeerViewModel, Domain.Entities.Beer>();
             CreateMap<BeerDto, Domain.Entities.Beer>();
+
+            CreateMap<Domain.Entities.Brewery, BreweryViewModel>();
         }
     }
 }

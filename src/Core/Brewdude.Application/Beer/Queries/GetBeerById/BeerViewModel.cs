@@ -1,5 +1,3 @@
-using Brewdude.Domain.Entities;
-
 namespace Brewdude.Application.Beer.Queries.GetBeerById
 {
     public class BeerViewModel

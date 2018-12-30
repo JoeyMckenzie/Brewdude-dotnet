@@ -14,12 +14,35 @@ namespace Brewdude.Persistence
             var instance = new BrewdudeDbInitializer();
             instance.SeedEntities(context);
         }
-        
-        public void SeedEntities(BrewdudeDbContext context)
+
+        public static bool TablesExist(BrewdudeDbContext context)
+        {
+            bool tablesExist;
+            
+            var connection = context.Database.GetDbConnection();
+            if (connection.State.Equals(ConnectionState.Closed))
+            {
+                connection.Open();
+            }
+            
+            using (var command = connection.CreateCommand()) 
+            {
+                // Only need to check if one table exists, wipe them all out
+                command.CommandText = @"
+                            SELECT 1 FROM sys.tables AS T
+                                INNER JOIN sys.schemas AS S ON T.schema_id = S.schema_id
+                            WHERE S.Name = 'dbo' AND T.Name = 'Beers'";
+                tablesExist = command.ExecuteScalar() != null;
+            }
+            
+            connection.Close();
+            return tablesExist;
+        }
+
+        private void SeedEntities(BrewdudeDbContext context)
         {
             SeedBreweries(context);
             SeedBeers(context);
-//            SeedBreweryIdOnBeersTable(context);
         }
 
         private void SeedBeers(BrewdudeDbContext context)

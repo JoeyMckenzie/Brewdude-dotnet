@@ -55,15 +55,7 @@ namespace Brewdude.Jwt.Services
             var tokenKey = Encoding.ASCII.GetBytes(_jwtSecret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.UserId.ToString()), 
-                    new Claim(ClaimTypes.Email, user.Email), 
-                    new Claim(ClaimTypes.UserData, user.Username),
-                    new Claim(ClaimTypes.UserData, user.FirstName),
-                    new Claim(ClaimTypes.UserData, user.LastName),
-                    new Claim(ClaimTypes.Role, user.Role.ToString())
-                }),
+                Subject = BuildRoleBasedClaims(user),
                 Issuer = "https://localhost:5001", // TODO: Modify once DNS is set
                 Audience = "https://localhost:5001",
                 IssuedAt = DateTime.UtcNow,
@@ -97,6 +89,40 @@ namespace Brewdude.Jwt.Services
             var tokenString = tokenHandler.WriteToken(token);
 
             return tokenString;
+        }
+
+        private static ClaimsIdentity BuildRoleBasedClaims(User user)
+        {
+            if (user.Role == Role.Admin)
+            {
+                return new ClaimsIdentity(new[]
+                {
+                    new Claim("userId", user.UserId.ToString()),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.UserData, user.Username),
+                    new Claim(ClaimTypes.UserData, user.FirstName),
+                    new Claim(ClaimTypes.UserData, user.LastName),
+                    new Claim(ClaimTypes.Role, user.Role.ToString()),
+                    new Claim("scopes", "read:beer"),
+                    new Claim("scopes", "read:brewery"),
+                    new Claim("scopes", "write:beer"),
+                    new Claim("scopes", "write:brewery"),
+                    new Claim("username", user.Username)
+                });
+            }
+            
+            return new ClaimsIdentity(new[]
+            {
+                new Claim("userId", user.UserId.ToString()),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.UserData, user.Username),
+                new Claim(ClaimTypes.UserData, user.FirstName),
+                new Claim(ClaimTypes.UserData, user.LastName),
+                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim("scopes", "read:beer"),
+                new Claim("scopes", "read:brewery"),
+                new Claim("username", user.Username)
+            });   
         }
     }
 }

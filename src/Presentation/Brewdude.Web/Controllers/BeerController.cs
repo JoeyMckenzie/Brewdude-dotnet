@@ -7,12 +7,14 @@ using Brewdude.Application.Beer.Commands.UpdateBeer;
 using Brewdude.Application.Beer.GetAllBeers.Queries;
 using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace Brewdude.Web.Controllers
 {
+        [Authorize(Policy = "BrewdudeUserPolicy")]
     public class BeerController : BrewdudeControllerBase
     {
         private readonly ILogger<BeerController> _logger;
@@ -25,7 +27,6 @@ namespace Brewdude.Web.Controllers
         [HttpGet]
         public async Task<ActionResult<BeerListViewModel>> GetAll()
         {
-            Log.Information("Test");
             _logger.LogInformation("Test");
             return Ok(await Mediator.Send(new GetAllBeersQuery()));
         }
@@ -33,8 +34,15 @@ namespace Brewdude.Web.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BeerViewModel>> GetById(int id)
         {
-            Log.Information("GetById Test");
-            return Ok(await Mediator.Send(new GetBeerByIdQuery(id)));
+            try
+            {
+                var beer = await Mediator.Send(new GetBeerByIdQuery(id));
+                return Ok(beer);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost]

@@ -34,7 +34,7 @@ namespace Brewdude.Application.Beer.Commands.UpdateBeer
             beerToUpdate.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync(cancellationToken);
             
-            _logger.LogInformation("UpdateBeerCommandHandler::Handle() - Beer updated successfully");
+            _logger.LogInformation("Beer [{0}] updated successfully", beerToUpdate.BeerId);
             return Unit.Value;
         }
     }

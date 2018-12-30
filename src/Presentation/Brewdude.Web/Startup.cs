@@ -8,6 +8,8 @@ using Brewdude.Application.Beer.Commands.UpdateBeer;
 using Brewdude.Application.Beer.GetAllBeers.Queries;
 using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
+using Brewdude.Application.Brewery.Queries.GetAllBreweries;
+using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Brewdude.Application.Infrastructure;
 using Brewdude.Application.Infrastructure.AutoMapper;
 using Brewdude.Application.Security;
@@ -34,6 +36,7 @@ namespace Brewdude.Web
     public class Startup
     {
         private string _jwtSecret;
+        private string _connectionString;
         
         public Startup(IConfiguration configuration)
         {
@@ -56,6 +59,8 @@ namespace Brewdude.Web
                 typeof(CreateBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(DeleteBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(UpdateBeerCommandHandler).GetTypeInfo().Assembly,
+                typeof(GetAllBreweriesQueryHandler).GetTypeInfo().Assembly,
+                typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
                 typeof(CreateUserCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetUserByIdCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetUserByUsernameCommandHandler).GetTypeInfo().Assembly
@@ -67,8 +72,9 @@ namespace Brewdude.Web
             services.AddTransient<ITokenService>(_ => new TokenService(_jwtSecret));
             
             // Add EF Core
+            _connectionString = Configuration["ConnectionString"];
             services.AddDbContext<BrewdudeDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Brewdude")));
+                options.UseSqlServer(_connectionString));
 
             // Add MediatR
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
@@ -79,37 +85,49 @@ namespace Brewdude.Web
             // Add JWT options
             // JWT authentication
             services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(jwtBearerOptions =>
+            {
+                jwtBearerOptions.Events = new JwtBearerEvents
                 {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(jwtBearerOptions =>
-                {
-                    jwtBearerOptions.Events = new JwtBearerEvents
+                    OnTokenValidated = context =>
                     {
-                        OnTokenValidated = context =>
+                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbContext>();
+                        var userId = int.Parse(context.Principal.Identity.Name);
+                        var user = userContext.Users.Find(userId);
+                        if (user == null)
                         {
-                            var userId = int.Parse(context.Principal.Identity.Name);
-//                            var user = userService.GetUserById(userId);
-//                            if (user == null)
-//                            {
-//                                // return unauthorized if user no longer exists
-//                                Log.Error("Startup::ConfigureServices - User with userId [{0}] no longer exists", userId);
-//                                context.Fail("Unauthorized");
-//                            }
-                            return Task.CompletedTask;
+                            // return unauthorized if user no longer exists
+                            Log.Error("Startup::ConfigureServices - User with userId [{0}] no longer exists", userId);
+                            context.Fail("Unauthorized");
                         }
-                    };
-                    jwtBearerOptions.RequireHttpsMetadata = false;
-                    jwtBearerOptions.SaveToken = true;
-                    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(jwtSigningSecret),
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                    };
+                        return Task.CompletedTask;
+                    }
+                };
+                jwtBearerOptions.RequireHttpsMetadata = false;
+                jwtBearerOptions.SaveToken = true;
+                jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(jwtSigningSecret),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("BrewdudeUserPolicy", policyBuilder =>
+                {
+                    policyBuilder.RequireAuthenticatedUser();
+                    policyBuilder.RequireRole("User");
+                    policyBuilder.RequireClaim("username");
+                    policyBuilder.RequireClaim("scopes", "read:brewery", "read:brewery", "write:beer", "write:brewery");
                 });
+            });
 
 
             services
@@ -136,7 +154,14 @@ namespace Brewdude.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            
+            app.UseCors(o => o
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
