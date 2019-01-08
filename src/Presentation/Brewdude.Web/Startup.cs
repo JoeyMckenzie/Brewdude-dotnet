@@ -19,6 +19,7 @@ using Brewdude.Application.Security;
 using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
+using Brewdude.Application.UserBeers.GetBeersByUserId;
 using Brewdude.Jwt.Services;
 using Brewdude.Persistence;
 using FluentValidation.AspNetCore;
@@ -59,10 +60,12 @@ namespace Brewdude.Web
             {
                 typeof(GetAllBeersQueryHandler).GetTypeInfo().Assembly,
                 typeof(GetBeerByIdQueryHandler).GetTypeInfo().Assembly,
+                typeof(GetBeersByUserIdQueryHandler).GetTypeInfo().Assembly,
                 typeof(CreateBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(DeleteBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(UpdateBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetAllBreweriesQueryHandler).GetTypeInfo().Assembly,
+                typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
                 typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
                 typeof(CreateUserCommandHandler).GetTypeInfo().Assembly,
                 typeof(UpdateBreweryCommandHandler).GetTypeInfo().Assembly,

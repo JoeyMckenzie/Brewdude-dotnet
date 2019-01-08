@@ -129,7 +129,9 @@ namespace Brewdude.Persistence
         {
             var userBreweries = new[]
             {
-                new UserBreweries { UserId = 1, BreweryId = 2 }
+                new UserBreweries { UserId = 2, BreweryId = 2 },
+                new UserBreweries { UserId = 2, BreweryId = 3 },
+                new UserBreweries { UserId = 1, BreweryId = 1 }
             };
             
             context.UserBreweries.AddRange(userBreweries);

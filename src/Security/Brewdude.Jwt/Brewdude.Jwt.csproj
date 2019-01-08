@@ -24,4 +24,8 @@
       <PackageReference Include="MediatR" Version="6.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Infrastructure" />
+    </ItemGroup>
+
 </Project>
