@@ -30,6 +30,7 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
             breweryToUpdate.StreetAddress = request.StreetAddress;
             breweryToUpdate.ZipCode = request.ZipCode;
             breweryToUpdate.UpdatedAt = DateTime.UtcNow;
+            breweryToUpdate.Website = string.IsNullOrWhiteSpace(request.Website) ? string.Empty : request.Website;
             await _context.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;

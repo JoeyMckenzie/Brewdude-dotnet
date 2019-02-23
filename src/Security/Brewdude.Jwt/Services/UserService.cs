@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Security;
-using Brewdude.Jwt.Models;
 using Brewdude.Persistence;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -44,7 +43,7 @@ namespace Brewdude.Jwt.Services
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             if (password == null) 
-                throw new ArgumentNullException("Password cannot be null");
+                throw new ArgumentNullException(nameof(password), "Password cannot be null");
             
             if (string.IsNullOrWhiteSpace(password)) 
                 throw new ArgumentException("Value cannot be empty or whitespace only string.");
@@ -91,14 +90,6 @@ namespace Brewdude.Jwt.Services
             }
  
             return true;
-        }
-
-        private static bool IsNotValidUserDto(UserDto userDto)
-        {
-            if (string.IsNullOrWhiteSpace(userDto.Password))
-                return true;
-
-            return string.IsNullOrWhiteSpace(userDto.Email) || string.IsNullOrWhiteSpace(userDto.Username);
         }
     }
 }

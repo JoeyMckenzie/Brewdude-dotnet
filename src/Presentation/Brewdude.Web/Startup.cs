@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -20,6 +21,7 @@ using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
 using Brewdude.Application.UserBeers.GetBeersByUserId;
+using Brewdude.Domain.Entities;
 using Brewdude.Jwt.Services;
 using Brewdude.Persistence;
 using FluentValidation.AspNetCore;
@@ -28,6 +30,7 @@ using MediatR.Pipeline;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -82,8 +85,17 @@ namespace Brewdude.Web
             // Add EF Core
             _connectionString = Configuration["ConnectionString"];
             services.AddDbContext<BrewdudeDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Brewdude")));
+                options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
 
+            services.AddDbContext<BrewdudeIdentityContext>(options =>
+                options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
+
+            // Add Identity
+            services.AddDefaultIdentity<BrewdudeUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<BrewdudeIdentityContext>()
+                .AddDefaultTokenProviders();
+            
             // Add MediatR
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
@@ -160,7 +172,7 @@ namespace Brewdude.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -171,6 +183,8 @@ namespace Brewdude.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            CreateRoles(serviceProvider).Wait();
             
             app.UseCors(o => o
                 .AllowAnyOrigin()
@@ -181,6 +195,28 @@ namespace Brewdude.Web
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+        
+        /// <summary>
+        /// Seed the user roles on application startup from the roles in the domain model.
+        /// </summary>
+        /// <param name="serviceProvider">Scoped access provided by the DI container</param>
+        /// <returns>Completed task</returns>
+        private static async Task CreateRoles(IServiceProvider serviceProvider)
+        {
+            //initializing custom roles 
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            string[] roles = { Role.User.ToString(), Role.Admin.ToString() };
+
+            foreach (var role in roles)
+            {
+                var roleExist = await roleManager.RoleExistsAsync(role);
+                if (!roleExist)
+                {
+                    //create the roles and seed them to the database: Question 1
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
+            }
         }
     }
 }

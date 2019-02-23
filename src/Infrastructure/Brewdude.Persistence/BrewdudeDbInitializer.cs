@@ -104,9 +104,9 @@ namespace Brewdude.Persistence
         {
             var breweries = new[]
             {
-                new Brewery { Description = "One of Northern California's staple breweries", Name = "Fall River Brewery", City = "Redding", State = "CA", StreetAddress = "123 Cypress Ave", ZipCode = 96002, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Brewery { Description = "One of America's staple micro-macro breweries", Name = "Sierra Nevada Brewing Company", City = "Chico", State = "CA", StreetAddress = "123 Chico St", ZipCode = 98765, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Brewery { Description = "A Davis brewery", Name = "Sudwerk Brewing Company", City = "Davis", State = "CA", StreetAddress = "123 Davis St", ZipCode = 98675, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+                new Brewery { Description = "One of Northern California's staple breweries", Name = "Fall River Brewery", City = "Redding", State = "CA", StreetAddress = "123 Cypress Ave", ZipCode = 96002, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Website = "http://fallriverbrewing.com/"},
+                new Brewery { Description = "One of America's staple micro-macro breweries", Name = "Sierra Nevada Brewing Company", City = "Chico", State = "CA", StreetAddress = "123 Chico St", ZipCode = 98765, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Website = "https://www.sierranevada.com/"},
+                new Brewery { Description = "A Davis brewery", Name = "Sudwerk Brewing Company", City = "Davis", State = "CA", StreetAddress = "123 Davis St", ZipCode = 98675, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Website = "https://sudwerkbrew.com/" }
             };
             
             context.Breweries.AddRange(breweries);

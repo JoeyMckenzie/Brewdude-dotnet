@@ -19,6 +19,7 @@ namespace Brewdude.Domain.Entities
         public string City { get; set; }
         public string State { get; set; }
         public int ZipCode { get; set; }
+        public string Website { get; set; }
 
         public ICollection<Beer> Beers { get; private set; }
     }

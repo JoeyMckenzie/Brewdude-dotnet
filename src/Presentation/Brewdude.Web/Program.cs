@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,26 +41,18 @@ namespace Brewdude.Web
                     try
                     {
                         var context = scope.ServiceProvider.GetService<BrewdudeDbContext>();
+                        var identityContext = scope.ServiceProvider.GetService<BrewdudeIdentityContext>();
 
                         // Drop the tables to recreate them with fresh data every server re-roll
-                        if (BrewdudeDbInitializer.TablesExist(context))
-                        {
-                            const string dropBeers = "DROP TABLE Beers;";
-                            const string dropBreweries = "DROP TABLE Breweries;";
-                            const string dropUsers = "DROP TABLE Users;";
-                            const string dropMigrations = "DROP TABLE __EFMigrationsHistory;";
-                            const string dropUserBeers = "DROP TABLE UserBeers;";
-                            const string dropUserBreweries = "DROP TABLE UserBreweries;";
-                            context.Database.ExecuteSqlCommand(dropBeers);
-                            context.Database.ExecuteSqlCommand(dropBreweries);
-                            context.Database.ExecuteSqlCommand(dropUsers);
-                            context.Database.ExecuteSqlCommand(dropMigrations);
-                            context.Database.ExecuteSqlCommand(dropUserBeers);
-                            context.Database.ExecuteSqlCommand(dropUserBreweries);
-                        }
-
-                        context.Database.Migrate();
-                        BrewdudeDbInitializer.Initialize(context);
+//                        Log.Information("Initializing database contexts");
+//                        var timer = new Stopwatch();
+//                        timer.Start();
+//                        context.Database.EnsureDeleted();
+//                        context.Database.EnsureCreated();
+//                        identityContext.Database.Migrate();
+//                        BrewdudeDbInitializer.Initialize(context);
+//                        timer.Stop();
+//                        Log.Information($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
                     }
                     catch (Exception e)
                     {

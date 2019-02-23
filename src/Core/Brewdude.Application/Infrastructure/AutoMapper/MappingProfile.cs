@@ -5,6 +5,7 @@ using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Brewdude.Application.User.Commands.Models;
 using Brewdude.Application.UserBeers.GetBeersByUserId;
 using Brewdude.Application.UserBreweries.GetBreweriesByUserId;
+using Brewdude.Domain.Entities;
 
 namespace Brewdude.Application.Infrastructure.AutoMapper
 {
@@ -17,11 +18,11 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
             CreateMap<Domain.Entities.Beer, BeerDto>()
                 .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
             CreateMap<Domain.Entities.User, UserViewModel>();
+            CreateMap<BrewdudeUser, UserViewModel>()
+                .ForMember(u => u.Id, m => m.MapFrom(b => b.Id));
             CreateMap<BeerViewModel, Domain.Entities.Beer>();
             CreateMap<BeerDto, Domain.Entities.Beer>();
-
             CreateMap<Domain.Entities.Brewery, BreweryViewModel>();
-
             CreateMap<Domain.Entities.Beer, UserBeerDto>();
             CreateMap<Domain.Entities.Brewery, UserBreweryDto>();
         }

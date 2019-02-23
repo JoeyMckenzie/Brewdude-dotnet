@@ -21,9 +21,10 @@ namespace Brewdude.Jwt.Services
         /// <summary>
         /// Attempt to validate the user email passed contained in the token
         /// </summary>
-        /// <param name="token">User entity</param>
+        /// <param name="token">Generated token from register/login</param>
+        /// <param name="user">BrewdudeUser entity</param>
         /// <returns>True if email is found and matches between user entity and token claim</returns>
-        public bool ValidateUserEmail(string token, User user)
+        public bool ValidateUserEmail(string token, BrewdudeUser user)
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -49,13 +50,13 @@ namespace Brewdude.Jwt.Services
             return false;
         }
 
-        public string CreateToken(User user)
+        public string CreateToken(BrewdudeUser user, Role role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(_jwtSecret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = BuildRoleBasedClaims(user),
+                Subject = BuildRoleBasedClaims(user, role),
                 Issuer = "https://localhost:5001", // TODO: Modify once DNS is set
                 Audience = "https://localhost:5001",
                 IssuedAt = DateTime.UtcNow,
@@ -91,37 +92,37 @@ namespace Brewdude.Jwt.Services
             return tokenString;
         }
 
-        private static ClaimsIdentity BuildRoleBasedClaims(User user)
+        private static ClaimsIdentity BuildRoleBasedClaims(BrewdudeUser user, Role role)
         {
-            if (user.Role == Role.Admin)
+            if (role == Role.Admin)
             {
                 return new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.Id),
                     new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.UserData, user.Username),
+                    new Claim(ClaimTypes.UserData, user.UserName),
                     new Claim(ClaimTypes.UserData, user.FirstName),
                     new Claim(ClaimTypes.UserData, user.LastName),
-                    new Claim(ClaimTypes.Role, user.Role.ToString()),
+                    new Claim(ClaimTypes.Role, role.ToString()),
                     new Claim("scopes", "read:beer"),
                     new Claim("scopes", "read:brewery"),
                     new Claim("scopes", "write:beer"),
                     new Claim("scopes", "write:brewery"),
-                    new Claim("username", user.Username)
+                    new Claim("username", user.UserName)
                 });
             }
             
             return new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.UserData, user.Username),
+                new Claim(ClaimTypes.UserData, user.UserName),
                 new Claim(ClaimTypes.UserData, user.FirstName),
                 new Claim(ClaimTypes.UserData, user.LastName),
-                new Claim(ClaimTypes.Role, user.Role.ToString()),
+                new Claim(ClaimTypes.Role, role.ToString()),
                 new Claim("scopes", "read:beer"),
                 new Claim("scopes", "read:brewery"),
-                new Claim("username", user.Username)
+                new Claim("username", user.UserName)
             });   
         }
     }

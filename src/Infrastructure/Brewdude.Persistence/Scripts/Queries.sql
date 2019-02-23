@@ -27,7 +27,7 @@ from Breweries b
   left outer join Users u on ub.UserId = u.UserId
 where u.UserId = 1;
 
--- 
+-- Get beer from brewery
 select 
        b.BeerId, 
        b.Name,

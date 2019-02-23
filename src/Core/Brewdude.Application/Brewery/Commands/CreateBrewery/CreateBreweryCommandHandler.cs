@@ -26,7 +26,8 @@ namespace Brewdude.Application.Brewery.Commands.CreateBrewery
                 StreetAddress = request.StreetAddress,
                 ZipCode = request.ZipCode,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                Website = string.IsNullOrWhiteSpace(request.Website) ? string.Empty : request.Website
             };
 
             _context.Add(brewery);

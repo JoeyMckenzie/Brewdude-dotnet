@@ -7,6 +7,7 @@ using Brewdude.Application.User.Queries.GetUserByUsername;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Brewdude.Web.Controllers
 {
@@ -24,6 +25,7 @@ namespace Brewdude.Web.Controllers
         public async Task<ActionResult<UserViewModel>> Register([FromBody] CreateUserCommand createUserCommand)
         {
             UserViewModel user;
+            _logger.LogInformation($"Sending request to create user {createUserCommand.Username} with email {createUserCommand.Email}");
 
             try
             {
@@ -31,11 +33,11 @@ namespace Brewdude.Web.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(JsonConvert.SerializeObject(e.Message));
             }
 
             if (user == null)
-                return BadRequest("Error creating user");
+                return BadRequest(JsonConvert.SerializeObject("Unexpected system error attempting to create user, please try again"));
 
             return Ok(user);
         }

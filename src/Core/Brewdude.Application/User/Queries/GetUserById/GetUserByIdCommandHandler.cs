@@ -30,12 +30,12 @@ namespace Brewdude.Application.User.Queries.GetUserById
                 throw new UserNotFoundException($"User [{request.UserId}] does not exist");
             
             // Generate a token for immediate use
-            var token = _tokenService.CreateToken(user);
-            if (string.IsNullOrWhiteSpace(token))
-                throw new UserCreationException("Token generation failed during user retrieval");
+//            var token = _tokenService.CreateToken(user);
+//            if (string.IsNullOrWhiteSpace(token))
+//                throw new UserCreationException("Token generation failed during user retrieval");
             
             var userViewModel = _mapper.Map<UserViewModel>(user);
-            userViewModel.Token = token;
+//            userViewModel.Token = token;
 
             return userViewModel;
         }

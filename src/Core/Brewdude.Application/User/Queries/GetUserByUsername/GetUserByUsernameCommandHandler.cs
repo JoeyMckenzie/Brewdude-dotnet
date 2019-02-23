@@ -1,52 +1,79 @@
 using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.Security;
 using Brewdude.Application.User.Commands.Models;
+using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Application.User.Queries.GetUserByUsername
 {
     public class GetUserByUsernameCommandHandler : IRequestHandler<GetUserByUsernameCommand, UserViewModel>
     {
-        private readonly BrewdudeDbContext _context;
-        private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
+        private readonly UserManager<BrewdudeUser> _userManager;
 
-        public GetUserByUsernameCommandHandler(IMapper mapper, BrewdudeDbContext context, IUserService userService, ITokenService tokenService)
+        public GetUserByUsernameCommandHandler(IMapper mapper, ITokenService tokenService, UserManager<BrewdudeUser> userManager)
         {
             _mapper = mapper;
-            _context = context;
-            _userService = userService;
             _tokenService = tokenService;
+            _userManager = userManager;
         }
 
         public async Task<UserViewModel> Handle(GetUserByUsernameCommand request, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
-
+            var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
-                throw new UserNotFoundException($"User [{request.Username}] does not exists");
-
-            // Validate the request user's password against the stored hash and salt
-            var isVerifiedPassword =
-                _userService.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt);
+            {
+                // Throw if user does not exist
+                throw new UserCreationException($"User with username [{request.Username}] does not exist");
+            }
             
+            // Validate the request user's password against the stored hash and salt
+            var isVerifiedPassword = await _userManager.CheckPasswordAsync(user, request.Password);
+
             if (!isVerifiedPassword)
+            {
+                // Throw on bad password
                 throw new ArgumentException($"Wrong password for user [{request.Username}]");
+            }
 
             // Generate a token for immediate use
-            var token = _tokenService.CreateToken(user);
-            if (string.IsNullOrWhiteSpace(token))
-                throw new UserCreationException("Token generation failed during username retrieval");
+            var userRoles = await _userManager.GetRolesAsync(user);
+            Role userRole;
+            if (userRoles.Any())
+            {
+                var roleExists = Enum.TryParse(userRoles[0], out userRole);
+                if (!roleExists)
+                {
+                    // Default to user role if no role is found for the retrieved user
+                    userRole = Role.User;
+                }
+            }
+            else
+            {
+                userRole = Role.User;
+            }
             
+            var token = _tokenService.CreateToken(user, userRole);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                // Throw on token create error
+                throw new UserCreationException("Token generation failed during user creation");
+            }   
+            
+            // Map the entity user to view model
             var userViewModel = _mapper.Map<UserViewModel>(user);
             userViewModel.Token = token;
+            userViewModel.Role = userRole.ToString();
             
             return userViewModel;
         }

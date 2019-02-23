@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using FluentValidation;
 
@@ -24,6 +25,13 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
                 if (!regex.IsMatch(context.PropertyValue.ToString()))
                     context.AddFailure("Invalid street address");                    
             }).NotEmpty();
+            RuleFor(b => b.Website).Custom((website, context) =>
+            {
+                Uri uri;
+                var isValidUri = Uri.TryCreate(website, UriKind.RelativeOrAbsolute, out uri);
+                if (!isValidUri)
+                    context.AddFailure("Invalid brewery website URL");
+            });
         }
     }
 }

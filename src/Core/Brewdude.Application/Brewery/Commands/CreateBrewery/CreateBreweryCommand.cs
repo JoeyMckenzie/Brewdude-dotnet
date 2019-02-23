@@ -10,5 +10,6 @@ namespace Brewdude.Application.Brewery.Commands.CreateBrewery
         public string City { get; set; }
         public string State { get; set; }
         public int ZipCode { get; set; }
+        public string Website { get; set; }
     }
 }
