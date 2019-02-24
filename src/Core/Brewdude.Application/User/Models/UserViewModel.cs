@@ -1,6 +1,4 @@
-using Brewdude.Domain.Entities;
-
-namespace Brewdude.Application.User.Commands.Models
+namespace Brewdude.Application.User.Models
 {
     public class UserViewModel
     {

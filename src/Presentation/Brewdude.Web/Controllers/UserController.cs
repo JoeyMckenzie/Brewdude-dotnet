@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using Brewdude.Application.Exceptions;
 using Brewdude.Application.User.Commands.CreateUser;
-using Brewdude.Application.User.Commands.Models;
+using Brewdude.Application.User.Models;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
+using Brewdude.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -74,11 +76,12 @@ namespace Brewdude.Web.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
-            }
+                var errorResponse = new UserErrorViewModel(e.Message);
+                if (e is UserNotFoundException)
+                    return NotFound(errorResponse);
 
-            if (user == null)
-                return BadRequest("Error retrieving user");
+                return BadRequest(errorResponse);
+            }
 
             return Ok(user);
         }

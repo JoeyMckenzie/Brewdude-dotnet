@@ -2,7 +2,7 @@ using AutoMapper;
 using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
-using Brewdude.Application.User.Commands.Models;
+using Brewdude.Application.User.Models;
 using Brewdude.Application.UserBeers.GetBeersByUserId;
 using Brewdude.Application.UserBreweries.GetBreweriesByUserId;
 using Brewdude.Domain.Entities;

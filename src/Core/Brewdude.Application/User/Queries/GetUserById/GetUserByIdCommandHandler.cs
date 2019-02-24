@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.Security;
-using Brewdude.Application.User.Commands.Models;
+using Brewdude.Application.User.Models;
 using Brewdude.Persistence;
 using MediatR;
 

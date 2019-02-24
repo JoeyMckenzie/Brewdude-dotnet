@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.Security;
-using Brewdude.Application.User.Commands.Models;
+using Brewdude.Application.User.Models;
 using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
 using MediatR;
@@ -34,7 +34,7 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
             if (user == null)
             {
                 // Throw if user does not exist
-                throw new UserCreationException($"User with username [{request.Username}] does not exist");
+                throw new UserNotFoundException($"User with username [{request.Username}] does not exist");
             }
             
             // Validate the request user's password against the stored hash and salt
