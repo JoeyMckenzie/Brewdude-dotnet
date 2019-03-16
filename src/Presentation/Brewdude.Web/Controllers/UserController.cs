@@ -1,10 +1,16 @@
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Models;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
+using Brewdude.Common.Constants;
+using Brewdude.Middleware.Models;
+using Brewdude.Middleware.Wrappers;
 using Brewdude.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +30,7 @@ namespace Brewdude.Web.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult<UserViewModel>> Register([FromBody] CreateUserCommand createUserCommand)
+        public async Task<ActionResult<ApiResponse>> Register([FromBody] CreateUserCommand createUserCommand)
         {
             UserViewModel user;
             _logger.LogInformation($"Sending request to create user {createUserCommand.Username} with email {createUserCommand.Email}");
@@ -35,17 +41,46 @@ namespace Brewdude.Web.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(JsonConvert.SerializeObject(e.Message));
+                return HandleUserErrorMessage(e);
             }
 
             if (user == null)
-                return BadRequest(JsonConvert.SerializeObject("Unexpected system error attempting to create user, please try again"));
+                return BadRequest(new BrewdudeErrorViewModel("Unexpected system error attempting to create user, please try again"));
 
             return Ok(user);
         }
 
+        [HttpPost]
+        [Route("login")]
+        public async Task<ApiResponse> Login([FromBody] GetUserByUsernameCommand request)
+        {
+            _logger.LogInformation($"Processing login attempt for user {request.Username}");
+            ApiResponse apiResponse;
+
+            try
+            {
+                var user = await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password));
+
+                if (user == null)
+                {
+                    throw new ApiException("User was not found", (int)HttpStatusCode.NotFound);
+                }
+                    
+                apiResponse = new ApiResponse((int)HttpStatusCode.OK, $"User {user.UserName} logged in successfully", user);
+
+            }
+            catch (Exception e)
+            {
+                throw new ApiException(e);
+            }
+
+            return apiResponse;
+        }
+        
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserViewModel>> GetUserById(int id)
+        [Authorize]
+        public async Task<ActionResult<ApiResponse>> GetUserById(int id)
         {
             UserViewModel user;
 
@@ -55,7 +90,7 @@ namespace Brewdude.Web.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return HandleUserErrorMessage(e);
             }
 
             if (user == null)
@@ -64,26 +99,14 @@ namespace Brewdude.Web.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
-        [Route("login")]
-        public async Task<ActionResult<UserViewModel>> Login([FromBody] GetUserByUsernameCommand request)
+        private ActionResult<ApiResponse> HandleUserErrorMessage(Exception e)
         {
-            UserViewModel user;
+            var errorResponse = new ApiResponse((int)HttpStatusCode.BadRequest, e.Message);
+                
+            if (e is UserNotFoundException)
+                return NotFound(errorResponse);
 
-            try
-            {
-                user = await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password));
-            }
-            catch (Exception e)
-            {
-                var errorResponse = new UserErrorViewModel(e.Message);
-                if (e is UserNotFoundException)
-                    return NotFound(errorResponse);
-
-                return BadRequest(errorResponse);
-            }
-
-            return Ok(user);
+            return BadRequest(errorResponse);
         }
     }
 }

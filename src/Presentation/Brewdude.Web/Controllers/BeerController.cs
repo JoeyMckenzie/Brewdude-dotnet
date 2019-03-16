@@ -1,12 +1,14 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Commands.CreateBeer;
 using Brewdude.Application.Beer.Commands.DeleteBeer;
 using Brewdude.Application.Beer.Commands.UpdateBeer;
-using Brewdude.Application.Beer.GetAllBeers.Queries;
 using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
+using Brewdude.Middleware.Models;
+using Brewdude.Middleware.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,10 +27,29 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<BeerListViewModel>> GetAll()
+        public async Task<ApiResponse> GetAll()
         {
-            _logger.LogInformation("Retrieving all beers");
-            return Ok(await Mediator.Send(new GetAllBeersQuery()));
+            _logger.LogInformation($"Retrieving all beers for request {User.Identity.Name}");
+            ApiResponse apiResponse;
+
+            try
+            {
+                var beers = await Mediator.Send(new GetAllBeersQuery());
+                
+                if (beers == null)
+                    throw new ApiException("No beers found", (int)HttpStatusCode.NotFound);
+
+                apiResponse = new ApiResponse((int) HttpStatusCode.OK, "Beers retrieved successfully", beers)
+                {
+                    ResultLength = beers.BeersResultLength
+                };
+            }
+            catch (Exception e)
+            {
+                throw new ApiException(e);
+            }
+
+            return apiResponse;
         }
 
         [HttpGet("{id}")]

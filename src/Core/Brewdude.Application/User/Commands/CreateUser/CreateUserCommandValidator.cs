@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using Brewdude.Application.Beer.Commands.CreateBeer;
+using Brewdude.Common.Constants;
 using Brewdude.Domain.Entities;
 using FluentValidation;
 
@@ -15,7 +16,7 @@ namespace Brewdude.Application.User.Commands.CreateUser
             RuleFor(u => u.LastName).NotEmpty();
             RuleFor(u => u.Password).Custom((password, context) =>
             {
-                var passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,20}$");
+                var passwordRegex = BrewdudeConstants.PasswordRegex;
                 if(!passwordRegex.IsMatch(password))
                     context.AddFailure("Password does not meet the password requirements");
             }).NotEmpty();

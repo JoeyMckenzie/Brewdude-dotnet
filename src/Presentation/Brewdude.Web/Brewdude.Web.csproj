@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\Infrastructure\Brewdude.Persistence\Brewdude.Persistence.csproj" />
     <ProjectReference Include="..\..\Core\Brewdude.Application\Brewdude.Application.csproj" />
     <ProjectReference Include="..\..\Security\Brewdude.Jwt\Brewdude.Jwt.csproj" />
+    <ProjectReference Include="..\Brewdude.Middleware\Brewdude.Middleware.csproj" />
   </ItemGroup>
 
 </Project>

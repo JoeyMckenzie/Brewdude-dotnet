@@ -2,9 +2,9 @@ using System;
 
 namespace Brewdude.Web.Models
 {
-    public class UserErrorViewModel
+    public class BrewdudeErrorViewModel
     {
-        public UserErrorViewModel(string message)
+        public BrewdudeErrorViewModel(string message)
         {
             Id = Guid.NewGuid();
             TimeStamp = DateTime.UtcNow;

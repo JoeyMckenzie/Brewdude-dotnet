@@ -20,7 +20,7 @@ namespace Brewdude.Application.User.Commands.CreateUser
         private readonly IMapper _mapper;
         private readonly UserManager<BrewdudeUser> _userManager;
 
-        public CreateUserCommandHandler(IUserService userService, IMapper mapper, ITokenService tokenService, UserManager<BrewdudeUser> userManager)
+        public CreateUserCommandHandler(IMapper mapper, ITokenService tokenService, UserManager<BrewdudeUser> userManager)
         {
             _mapper = mapper;
             _tokenService = tokenService;

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
-using Brewdude.Application.Beer.GetAllBeers.Queries;
 using Brewdude.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +29,8 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
     
             var model = new BeerListViewModel
             {
-                Beers = _mapper.Map<IEnumerable<BeerDto>>(beers)
+                Beers = _mapper.Map<IEnumerable<BeerDto>>(beers),
+                BeersResultLength = beers.Count
             };
 
             return model;

@@ -1,9 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AssemblyName>Brewdude.Common</AssemblyName>
     <RootNamespace>Brewdude.Common</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\..\..\..\..\.nuget\packages\newtonsoft.json\9.0.1\lib\netstandard1.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

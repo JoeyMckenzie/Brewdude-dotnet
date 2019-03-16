@@ -8,7 +8,6 @@ using AutoMapper;
 using Brewdude.Application.Beer.Commands.CreateBeer;
 using Brewdude.Application.Beer.Commands.DeleteBeer;
 using Brewdude.Application.Beer.Commands.UpdateBeer;
-using Brewdude.Application.Beer.GetAllBeers.Queries;
 using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
 using Brewdude.Application.Brewery.Commands.CreateBrewery;
@@ -25,6 +24,7 @@ using Brewdude.Application.User.Queries.GetUserByUsername;
 using Brewdude.Application.UserBeers.GetBeersByUserId;
 using Brewdude.Domain.Entities;
 using Brewdude.Jwt.Services;
+using Brewdude.Middleware.Extensions;
 using Brewdude.Persistence;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -33,12 +33,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Serilog;
@@ -48,11 +48,12 @@ namespace Brewdude.Web
     public class Startup
     {
         private string _jwtSecret;
-        private string _connectionString;
+        private readonly ILogger<Startup> _logger;
         
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
+            _logger = logger;
         }
 
         public IConfiguration Configuration { get; }
@@ -88,7 +89,6 @@ namespace Brewdude.Web
             services.AddTransient<ITokenService>(_ => new TokenService(_jwtSecret));
             
             // Add EF Core
-            _connectionString = Configuration["ConnectionString"];
             services.AddDbContext<BrewdudeDbContext>(options =>
                 options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
 
@@ -121,13 +121,20 @@ namespace Brewdude.Web
                     OnTokenValidated = context =>
                     {
                         var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbContext>();
-                        var userId = int.Parse(context.Principal.Identity.Name);
-                        var user = userContext.Users.Find(userId);
-                        if (user == null)
+                        var userIdParsedSuccessfully = int.TryParse(context.Principal.Identity.Name, out var userId);
+                        if (!userIdParsedSuccessfully)
                         {
-                            // return unauthorized if user no longer exists
-                            Log.Error("Startup::ConfigureServices - User with userId [{0}] no longer exists", userId);
-                            context.Fail("Unauthorized");
+                            _logger.LogWarning($"User ID was not parsed successfully for user {context.Principal.Identity.Name}");
+                        }
+                        else
+                        {
+                            var user = userContext.Users.Find(userId);
+                            if (user == null)
+                            {
+                                // return unauthorized if user no longer exists
+                                _logger.LogError($"User with userId [{userId}] no longer exists");
+                                context.Fail("Unauthorized");
+                            }  
                         }
                         return Task.CompletedTask;
                     }
@@ -136,6 +143,7 @@ namespace Brewdude.Web
                 jwtBearerOptions.SaveToken = true;
                 jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
                 {
+                    
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(jwtSigningSecret),
                     ValidateIssuer = false,
@@ -221,6 +229,7 @@ namespace Brewdude.Web
                 .AllowAnyHeader()
                 .AllowCredentials());
 
+            app.UseApiResponseMiddleware();
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
