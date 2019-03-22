@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
+using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

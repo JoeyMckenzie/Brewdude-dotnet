@@ -1,11 +1,7 @@
 using AutoMapper;
-using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
-using Brewdude.Application.Beer.Queries.GetBeerById;
-using Brewdude.Application.Brewery.Queries.GetBreweryById;
-using Brewdude.Application.User.Models;
-using Brewdude.Application.UserBeers.GetBeersByUserId;
-using Brewdude.Application.UserBreweries.GetBreweriesByUserId;
+using Brewdude.Domain.Dtos;
 using Brewdude.Domain.Entities;
+using Brewdude.Domain.ViewModels;
 
 namespace Brewdude.Application.Infrastructure.AutoMapper
 {
@@ -13,18 +9,38 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
     {
         public MappingProfile()
         {
+            // View Models
             CreateMap<Domain.Entities.Beer, BeerViewModel>()
                 .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
-            CreateMap<Domain.Entities.Beer, BeerDto>()
-                .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
-            CreateMap<Domain.Entities.User, UserViewModel>();
+            CreateMap<BeerViewModel, Domain.Entities.Beer>();
+            
             CreateMap<BrewdudeUser, UserViewModel>()
                 .ForMember(u => u.Id, m => m.MapFrom(b => b.Id));
-            CreateMap<BeerViewModel, Domain.Entities.Beer>();
-            CreateMap<BeerDto, Domain.Entities.Beer>();
+            CreateMap<UserViewModel, BrewdudeUser>();
+            
             CreateMap<Domain.Entities.Brewery, BreweryViewModel>();
+            
+            
+            // Dtos
+            CreateMap<Domain.Entities.Beer, BeerDto>()
+                .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
+            CreateMap<BeerDto, Domain.Entities.Beer>();
+
+            CreateMap<Address, AddressDto>()
+                .ForMember(a => a.City, m => m.MapFrom(a => a.City))
+                .ForMember(a => a.State, m => m.MapFrom(a => a.State))
+                .ForMember(a => a.StreetAddress, m => m.MapFrom(a => a.StreetAddress))
+                .ForMember(a => a.ZipCode, m => m.MapFrom(a => a.ZipCode));
+            CreateMap<AddressDto, Address>()
+                .ForMember(a => a.City, m => m.MapFrom(a => a.City))
+                .ForMember(a => a.State, m => m.MapFrom(a => a.State))
+                .ForMember(a => a.StreetAddress, m => m.MapFrom(a => a.StreetAddress))
+                .ForMember(a => a.ZipCode, m => m.MapFrom(a => a.ZipCode));
+            
             CreateMap<Domain.Entities.Beer, UserBeerDto>();
+            
             CreateMap<Domain.Entities.Brewery, UserBreweryDto>();
+            
         }
     }
 }

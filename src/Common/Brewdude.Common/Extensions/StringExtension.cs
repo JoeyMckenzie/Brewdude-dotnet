@@ -15,8 +15,7 @@ namespace Brewdude.Common.Extensions
         public static bool IsValidJson(this string text)
         {
             text = text.Trim();
-            if (text.StartsWith("{") && text.EndsWith("}") ||
-                    text.StartsWith("[") && text.EndsWith("]"))
+            if (ContainsValidJsonStructure(text))
             {
                 try
                 {

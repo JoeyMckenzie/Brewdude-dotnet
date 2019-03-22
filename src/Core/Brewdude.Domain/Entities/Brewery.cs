@@ -15,12 +15,9 @@ namespace Brewdude.Domain.Entities
         public int BreweryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string StreetAddress { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
-        public int ZipCode { get; set; }
+        public int? AddressId { get; set; }
+        public Address Address { get; set; }
         public string Website { get; set; }
-
-        public ICollection<Beer> Beers { get; private set; }
+        public ICollection<Beer> Beers { get; }
     }
 }

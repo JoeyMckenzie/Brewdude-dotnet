@@ -4,13 +4,15 @@ namespace Brewdude.Middleware.Wrappers
 {
     public enum ResourceMessage
     {
-        [Description("Request successful")]
+        [Description("Request was successful")]
         Success,
+        [Description("Bad request during pipepline")]
+        BadRequest,
         [Description("Request responded with exceptions")]
         Exception,
-        [Description("Request denied")]
+        [Description("User is unauthorized to make the request")]
         Unauthorized,
-        [Description("Access denied")]
+        [Description("User does not have permission to make the request")]
         Forbidden,
         [Description("Request responded with validation error(s)")]
         ValidationError,

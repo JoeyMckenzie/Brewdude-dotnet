@@ -22,7 +22,9 @@ using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
 using Brewdude.Application.UserBeers.GetBeersByUserId;
+using Brewdude.Common;
 using Brewdude.Domain.Entities;
+using Brewdude.Infrastructure;
 using Brewdude.Jwt.Services;
 using Brewdude.Middleware.Extensions;
 using Brewdude.Persistence;
@@ -41,7 +43,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace Brewdude.Web
 {
@@ -85,7 +86,7 @@ namespace Brewdude.Web
 
             // Add services
             services.AddAutoMapper(typeof(MappingProfile).GetTypeInfo().Assembly);
-            services.AddScoped<IUserService, UserService>();
+            services.AddTransient<IDateTime, MachineDateTime>();
             services.AddTransient<ITokenService>(_ => new TokenService(_jwtSecret));
             
             // Add EF Core
@@ -104,11 +105,10 @@ namespace Brewdude.Web
             // Add MediatR
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehavior<,>));
             services.AddMediatR(assemblies);
             
-            // Add JWT options
-            // JWT authentication
+            // Add JWT authenication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -120,7 +120,7 @@ namespace Brewdude.Web
                 {
                     OnTokenValidated = context =>
                     {
-                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbContext>();
+                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeIdentityContext>();
                         var userIdParsedSuccessfully = int.TryParse(context.Principal.Identity.Name, out var userId);
                         if (!userIdParsedSuccessfully)
                         {
@@ -199,7 +199,7 @@ namespace Brewdude.Web
                 {
                     builder.Run(async context =>
                     {
-                        context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         var error = context.Features.Get<IExceptionHandlerFeature>()?.Error;
                         if (error != null)
                         {
@@ -229,7 +229,7 @@ namespace Brewdude.Web
                 .AllowAnyHeader()
                 .AllowCredentials());
 
-            app.UseApiResponseMiddleware();
+            // app.UseApiResponseMiddleware();
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();

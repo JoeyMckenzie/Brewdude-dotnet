@@ -1,5 +1,5 @@
-using Brewdude.Application.User.Models;
 using Brewdude.Domain.Entities;
+using Brewdude.Domain.ViewModels;
 using MediatR;
 
 namespace Brewdude.Application.User.Commands.CreateUser

@@ -1,4 +1,4 @@
-namespace Brewdude.Application.Beer.Queries.GetBeerById
+namespace Brewdude.Domain.ViewModels
 {
     public class BeerViewModel
     {

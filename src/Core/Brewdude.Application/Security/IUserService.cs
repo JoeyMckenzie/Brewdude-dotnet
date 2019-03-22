@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Brewdude.Application.User.Models;
+using Brewdude.Domain.ViewModels;
 
 namespace Brewdude.Application.Security
 {

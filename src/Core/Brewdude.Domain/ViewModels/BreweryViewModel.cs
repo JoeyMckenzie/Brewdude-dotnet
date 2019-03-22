@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
 
-namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
+namespace Brewdude.Domain.ViewModels
 {
-    public class BreweryDto
+    public class BreweryViewModel
     {
-        public BreweryDto()
+        public BreweryViewModel()
         {
-            Beers = new HashSet<BeerDto>();
+            Beers = new HashSet<BeerViewModel>();
         }
 
         public int BreweryId { get; set; }
@@ -17,6 +16,6 @@ namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
         public string City { get; set; }
         public string State { get; set; }
         public int ZipCode { get; set; }
-        public ICollection<BeerDto> Beers { get; set; }
+        public ICollection<BeerViewModel> Beers { get; set; }
     }
 }

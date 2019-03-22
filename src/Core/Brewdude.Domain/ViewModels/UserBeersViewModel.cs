@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Brewdude.Application.UserBeers.GetBeersByUserId
+namespace Brewdude.Domain.ViewModels
 {
     public class UserBeersViewModel
     {

@@ -5,6 +5,7 @@ using Brewdude.Application.Brewery.Commands.DeleteBrewery;
 using Brewdude.Application.Brewery.Commands.UpdateBrewery;
 using Brewdude.Application.Brewery.Queries.GetAllBreweries;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
+using Brewdude.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

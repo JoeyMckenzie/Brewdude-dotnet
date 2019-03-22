@@ -21,13 +21,11 @@ namespace Brewdude.Persistence.Configurations
             
             builder.Property(b => b.BeerStyle).IsRequired();
 
-            builder
-                .HasOne(b => b.Brewery)
+            builder.HasOne(b => b.Brewery)
                 .WithMany(b => b.Beers)
                 .HasForeignKey(b => b.BreweryId);
 
-            builder
-                .Property(b => b.BeerStyle)
+            builder.Property(b => b.BeerStyle)
                 .HasConversion(new EnumToStringConverter<BeerStyle>());
         }
     }

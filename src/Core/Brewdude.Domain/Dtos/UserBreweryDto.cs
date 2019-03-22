@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Brewdude.Applicaio.Beer.Queries.GetAllBeers;
+using Brewdude.Domain.Dtos;
 
-namespace Brewdude.Application.UserBreweries.GetBreweriesByUserId
+namespace Brewdude.Domain.ViewModels
 {
     public class UserBreweryDto
     {

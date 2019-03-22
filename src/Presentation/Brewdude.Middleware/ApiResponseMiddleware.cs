@@ -32,7 +32,8 @@ namespace Brewdude.Middleware
                 { (int)HttpStatusCode.OK, ResourceMessage.Success.GetDescription() },
                 { (int)HttpStatusCode.InternalServerError, ResourceMessage.Failure.GetDescription() },
                 { (int)HttpStatusCode.Unauthorized, ResourceMessage.Unauthorized.GetDescription() },
-                { (int)HttpStatusCode.Forbidden, ResourceMessage.Forbidden.GetDescription() }
+                { (int)HttpStatusCode.Forbidden, ResourceMessage.Forbidden.GetDescription() },
+                { (int)HttpStatusCode.BadRequest, ResourceMessage.BadRequest.GetDescription() }
             };
         }
 
@@ -104,22 +105,22 @@ namespace Brewdude.Middleware
                 
                 if (apiResponse.StatusCode != statusCode)
                 {
-                    responseJson = JsonConvert.SerializeObject(apiResponse);
+                    responseJson = JsonConvert.SerializeObject(apiResponse, BrewdudeConstants.BrewdudeJsonSerializerSettings);
                 }
                 else if (apiResponse.Result != null)
                 {
-                    responseJson = JsonConvert.SerializeObject(apiResponse);
+                    responseJson = JsonConvert.SerializeObject(apiResponse, BrewdudeConstants.BrewdudeJsonSerializerSettings);
                 }
                 else
                 {
                     apiResponse = new ApiResponse(statusCode, ResourceMessage.Success.GetDescription(), bodyContent, null);
-                    responseJson = JsonConvert.SerializeObject(apiResponse);
+                    responseJson = JsonConvert.SerializeObject(apiResponse, BrewdudeConstants.BrewdudeJsonSerializerSettings);
                 }
             }
             else
             {
                 apiResponse = new ApiResponse(statusCode, ResourceMessage.Success.GetDescription(), bodyContent, null);
-                responseJson = JsonConvert.SerializeObject(apiResponse);
+                responseJson = JsonConvert.SerializeObject(apiResponse, BrewdudeConstants.BrewdudeJsonSerializerSettings);
             }
 
             return context.Response.WriteAsync(responseJson);
@@ -134,7 +135,6 @@ namespace Brewdude.Middleware
         private Task HandleFailedRequestAsync(HttpContext context, int statusCode)
         {
             context.Response.ContentType = "application/json";
-
             ApiError apiError;
 
             switch (statusCode)
@@ -147,6 +147,9 @@ namespace Brewdude.Middleware
                     break;
                 case (int)HttpStatusCode.Unauthorized:
                     apiError = new ApiError($"The request from user ID is unauthorized to access {context.Request.Path}");
+                    break;
+                case (int)HttpStatusCode.BadRequest:
+                    apiError = new ApiError($"Bad request for user ID {context.User.Identity.Name}");
                     break;
                 case (int)HttpStatusCode.Forbidden:
                     apiError = new ApiError($"The request from user ID {context.User.Identity.Name} does not have access for path {context.Request.Path}");
@@ -227,10 +230,10 @@ namespace Brewdude.Middleware
         private async Task<string> FormatResponse(HttpResponse response)
         {
             var plainBodyText = string.Empty;
+            response.Body.Seek(0, SeekOrigin.Begin);
 
             try
             {
-                response.Body.Seek(0, SeekOrigin.Begin);
                 plainBodyText = await new StreamReader(response.Body).ReadToEndAsync();
             }
             catch (Exception exception)

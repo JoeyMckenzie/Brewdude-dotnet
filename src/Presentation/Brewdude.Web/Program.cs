@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Brewdude.Web
 {
@@ -44,15 +38,17 @@ namespace Brewdude.Web
                         var identityContext = scope.ServiceProvider.GetService<BrewdudeIdentityContext>();
 
                         // Drop the tables to recreate them with fresh data every server re-roll
-//                        Log.Information("Initializing database contexts");
-//                        var timer = new Stopwatch();
-//                        timer.Start();
-//                        context.Database.EnsureDeleted();
-//                        context.Database.EnsureCreated();
-//                        identityContext.Database.Migrate();
-//                        BrewdudeDbInitializer.Initialize(context);
-//                        timer.Stop();
-//                        Log.Information($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
+                        /*
+                        Console.WriteLine("Initializing database contexts");
+                        var timer = new Stopwatch();
+                        timer.Start();
+                        context.Database.EnsureDeleted();
+                        context.Database.EnsureCreated();
+                        identityContext.Database.Migrate();
+                        BrewdudeDbInitializer.Initialize(context);
+                        timer.Stop();
+                        Console.WriteLine($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
+                        */
                     }
                     catch (Exception e)
                     {

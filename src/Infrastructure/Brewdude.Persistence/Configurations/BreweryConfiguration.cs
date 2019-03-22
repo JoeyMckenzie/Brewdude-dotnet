@@ -14,16 +14,11 @@ namespace Brewdude.Persistence.Configurations
 
             builder.Property(b => b.Description).HasMaxLength(128).IsRequired();
 
-            builder.Property(b => b.StreetAddress).HasMaxLength(32).IsRequired();
+            builder.HasOne(b => b.Address)
+                .WithOne(a => a.Brewery)
+                .HasForeignKey<Address>(a => a.BreweryId);
 
-            builder.Property(b => b.City).IsRequired();
-
-            builder.Property(b => b.State).HasMaxLength(2).IsFixedLength().IsRequired();
-
-            builder.Property(b => b.ZipCode).HasMaxLength(5).IsRequired();
-            
-            builder
-                .HasMany(b => b.Beers)
+            builder.HasMany(b => b.Beers)
                 .WithOne(b => b.Brewery)
                 .IsRequired();
         }

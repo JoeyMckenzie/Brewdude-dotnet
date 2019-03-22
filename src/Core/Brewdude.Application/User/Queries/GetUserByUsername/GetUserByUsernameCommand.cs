@@ -1,4 +1,4 @@
-using Brewdude.Application.User.Models;
+using Brewdude.Domain.ViewModels;
 using MediatR;
 
 namespace Brewdude.Application.User.Queries.GetUserByUsername

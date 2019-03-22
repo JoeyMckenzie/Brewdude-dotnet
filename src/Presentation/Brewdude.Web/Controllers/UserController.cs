@@ -1,21 +1,17 @@
 using System;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.User.Commands.CreateUser;
-using Brewdude.Application.User.Models;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
-using Brewdude.Common.Constants;
+using Brewdude.Domain.ViewModels;
 using Brewdude.Middleware.Models;
 using Brewdude.Middleware.Wrappers;
 using Brewdude.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Brewdude.Web.Controllers
 {

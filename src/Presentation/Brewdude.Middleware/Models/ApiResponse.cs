@@ -14,10 +14,10 @@ namespace Brewdude.Middleware.Models
         public string Message { get; set; }
         
         [DataMember(EmitDefaultValue = false)]
-        public object Result { get; set; }
+        public int ResultLength { get; set; }
         
         [DataMember(EmitDefaultValue = false)]
-        public int ResultLength { get; set; }
+        public object Result { get; set; }
         
         [DataMember(EmitDefaultValue = false)]
         public ApiError ResponseException { get; set; }

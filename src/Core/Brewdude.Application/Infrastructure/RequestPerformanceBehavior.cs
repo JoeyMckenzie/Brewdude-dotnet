@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Infrastructure
 {
-    public class RequestPerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    public class RequestPerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly Stopwatch _timer;
         private readonly ILogger<TRequest> _logger;
 
-        public RequestPerformanceBehaviour(ILogger<TRequest> logger)
+        public RequestPerformanceBehavior(ILogger<TRequest> logger)
         {
             _timer = new Stopwatch();
             _logger = logger;
@@ -26,7 +26,7 @@ namespace Brewdude.Application.Infrastructure
             if (_timer.ElapsedMilliseconds > 500)
             {
                 var name = typeof(TRequest).Name;
-                _logger.LogWarning("RequestPerformanceBehaviour.Handle() - Brewdude Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", name, _timer.ElapsedMilliseconds, request);
+                _logger.LogWarning("RequestPerformanceBehavior.Handle() - Brewdude Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", name, _timer.ElapsedMilliseconds, request);
             }
 
             return response;

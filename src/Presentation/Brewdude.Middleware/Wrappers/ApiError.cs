@@ -11,15 +11,15 @@ namespace Brewdude.Middleware.Wrappers
         {
             ExceptionMessage = message;
             IsError = true;
+        }  
+        
+        public ApiError(string message, string details)
+        {
+            ExceptionMessage = message;
+            Details = details;
+            IsError = true;
         }
         
-        public bool IsError { get; set; }
-        public string ExceptionMessage { get; set; }
-        public string Details { get; set; }
-        public string ReferenceErrorCode { get; set; }
-        public string ReferenceDocumentLink { get; set; }
-        public IEnumerable<ValidationError> ValidationErrors { get; set; }
-
         public ApiError(ModelStateDictionary modelState)
         {
             IsError = true;
@@ -32,5 +32,12 @@ namespace Brewdude.Middleware.Wrappers
 
             }
         }
+        
+        public bool IsError { get; set; }
+        public string ExceptionMessage { get; set; }
+        public string Details { get; set; }
+        public string ReferenceErrorCode { get; set; }
+        public string ReferenceDocumentLink { get; set; }
+        public IEnumerable<ValidationError> ValidationErrors { get; set; }
     }
 }

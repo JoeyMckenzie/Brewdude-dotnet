@@ -1,16 +1,12 @@
-using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.Security;
-using Brewdude.Application.User.Models;
 using Brewdude.Domain.Entities;
-using Brewdude.Persistence;
+using Brewdude.Domain.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Application.User.Commands.CreateUser
 {

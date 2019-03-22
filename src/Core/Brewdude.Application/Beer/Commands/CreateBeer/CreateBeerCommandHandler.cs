@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Brewdude.Application.Exceptions;
 using Brewdude.Common;
 using Brewdude.Persistence;
 using MediatR;
@@ -21,6 +22,13 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
 
         public async Task<int> Handle(CreateBeerCommand request, CancellationToken cancellationToken)
         {
+            // Validate beer to be added does not already exist
+            var existingBeer = await _context.Beers.FirstAsync(b =>
+                string.Equals(b.Name, request.Name, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
+            
+            if (existingBeer != null)
+                throw new BrewdudeUpdateOrCreationException($"Beer with name [{request.Name}] already exists");
+            
             var beer = new Domain.Entities.Beer
             {
                 Name = request.Name,

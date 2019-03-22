@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
+using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
 using MediatR;
 

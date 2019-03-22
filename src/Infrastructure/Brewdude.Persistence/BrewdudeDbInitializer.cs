@@ -12,42 +12,19 @@ namespace Brewdude.Persistence
         public static void Initialize(BrewdudeDbContext context)
         {
             var instance = new BrewdudeDbInitializer();
-            instance.SeedEntities(context);
+            SeedEntities(context);
         }
 
-        public static bool TablesExist(BrewdudeDbContext context)
-        {
-            bool tablesExist;
-            
-            var connection = context.Database.GetDbConnection();
-            if (connection.State.Equals(ConnectionState.Closed))
-            {
-                connection.Open();
-            }
-            
-            using (var command = connection.CreateCommand()) 
-            {
-                // Only need to check if one table exists, wipe them all out
-                command.CommandText = @"
-                            SELECT 1 FROM sys.tables AS T
-                                INNER JOIN sys.schemas AS S ON T.schema_id = S.schema_id
-                            WHERE S.Name = 'dbo' AND T.Name = 'Beers'";
-                tablesExist = command.ExecuteScalar() != null;
-            }
-            
-            connection.Close();
-            return tablesExist;
-        }
-
-        private void SeedEntities(BrewdudeDbContext context)
+        private static void SeedEntities(BrewdudeDbContext context)
         {
             SeedBreweries(context);
+            UpdateBreweryAddressesWithBreweryId(context);
             SeedBeers(context);
             SeedUserBeers(context);
             SeedUserBreweries(context);
         }
 
-        private void SeedBeers(BrewdudeDbContext context)
+        private static void SeedBeers(BrewdudeDbContext context)
         {
             context.Beers.Add(new Beer
             {
@@ -100,20 +77,77 @@ namespace Brewdude.Persistence
             context.SaveChanges();
         }
 
-        private void SeedBreweries(BrewdudeDbContext context)
+        private static void SeedBreweries(BrewdudeDbContext context)
         {
             var breweries = new[]
             {
-                new Brewery { Description = "One of Northern California's staple breweries", Name = "Fall River Brewery", City = "Redding", State = "CA", StreetAddress = "123 Cypress Ave", ZipCode = 96002, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Website = "http://fallriverbrewing.com/"},
-                new Brewery { Description = "One of America's staple micro-macro breweries", Name = "Sierra Nevada Brewing Company", City = "Chico", State = "CA", StreetAddress = "123 Chico St", ZipCode = 98765, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Website = "https://www.sierranevada.com/"},
-                new Brewery { Description = "A Davis brewery", Name = "Sudwerk Brewing Company", City = "Davis", State = "CA", StreetAddress = "123 Davis St", ZipCode = 98675, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, Website = "https://sudwerkbrew.com/" }
+                new Brewery
+                {
+                    Description = "One of Northern California's staple breweries", 
+                    Name = "Fall River Brewery", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow, 
+                    Website = "http://fallriverbrewing.com/",
+                    Address = new Address
+                    {
+                        City = "Redding",
+                        State = "CA",
+                        StreetAddress = "123 Cypress Ave",
+                        ZipCode = 96002
+                    }
+                },
+                new Brewery
+                {
+                    Description = "One of America's staple micro-macro breweries", 
+                    Name = "Sierra Nevada Brewing Company", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow, 
+                    Website = "https://www.sierranevada.com/",
+                    Address = new Address
+                    {
+                        City = "Chico",
+                        State = "CA",
+                        StreetAddress = "123 Chico St",
+                        ZipCode = 98765
+                    }
+                },
+                new Brewery
+                {
+                    Description = "A Davis brewery", 
+                    Name = "Sudwerk Brewing Company", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow, 
+                    Website = "https://sudwerkbrew.com/",
+                    Address = new Address
+                    {
+                        City = "Davis",
+                        State = "CA",
+                        StreetAddress = "123 Davis St",
+                        ZipCode = 12345
+                    }
+                }
             };
             
             context.Breweries.AddRange(breweries);
             context.SaveChanges();
         }
 
-        private void SeedUserBeers(BrewdudeDbContext context)
+        private static void UpdateBreweryAddressesWithBreweryId(BrewdudeDbContext context)
+        {
+            var fallRiverBrewery = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery");
+            var sierraNevadaBrewery = context.Breweries.FirstOrDefault(b => b.Name == "Sierra Nevada Brewing Company");
+            var sudwerkBrewingCompany = context.Breweries.FirstOrDefault(b => b.Name == "Sudwerk Brewing Company");
+            var breweries = new[] {fallRiverBrewery, sierraNevadaBrewery, sudwerkBrewingCompany};
+
+            fallRiverBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Redding").AddressId;
+            sierraNevadaBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Chico").AddressId;
+            sudwerkBrewingCompany.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Davis").AddressId;
+            
+            context.Breweries.UpdateRange(breweries);
+            context.SaveChanges();
+        }
+
+        private static void SeedUserBeers(BrewdudeDbContext context)
         {
             var userBeers = new[]
             {
@@ -125,7 +159,7 @@ namespace Brewdude.Persistence
             context.SaveChanges();
         }
 
-        private void SeedUserBreweries(BrewdudeDbContext context)
+        private static void SeedUserBreweries(BrewdudeDbContext context)
         {
             var userBreweries = new[]
             {

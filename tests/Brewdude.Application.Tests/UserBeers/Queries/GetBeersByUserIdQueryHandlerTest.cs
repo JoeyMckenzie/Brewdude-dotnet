@@ -5,6 +5,7 @@ using AutoMapper;
 using Brewdude.Application.Exceptions;
 using Brewdude.Application.Tests.Infrastructure;
 using Brewdude.Application.UserBeers.GetBeersByUserId;
+using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
 using Shouldly;
 using Xunit;

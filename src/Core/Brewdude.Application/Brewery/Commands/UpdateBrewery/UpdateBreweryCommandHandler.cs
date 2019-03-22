@@ -25,10 +25,10 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
 
             breweryToUpdate.Name = request.Name;
             breweryToUpdate.Description = request.Description;
-            breweryToUpdate.City = request.City;
-            breweryToUpdate.State = request.State;
-            breweryToUpdate.StreetAddress = request.StreetAddress;
-            breweryToUpdate.ZipCode = request.ZipCode;
+//            breweryToUpdate.City = request.City;
+//            breweryToUpdate.State = request.State;
+//            breweryToUpdate.StreetAddress = request.StreetAddress;
+//            breweryToUpdate.ZipCode = request.ZipCode;
             breweryToUpdate.UpdatedAt = DateTime.UtcNow;
             breweryToUpdate.Website = string.IsNullOrWhiteSpace(request.Website) ? string.Empty : request.Website;
             await _context.SaveChangesAsync(cancellationToken);

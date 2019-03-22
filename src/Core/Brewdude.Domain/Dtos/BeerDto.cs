@@ -1,6 +1,4 @@
-using Brewdude.Domain.Entities;
-
-namespace Brewdude.Applicaio.Beer.Queries.GetAllBeers
+namespace Brewdude.Domain.Dtos
 {
     public class BeerDto
     {

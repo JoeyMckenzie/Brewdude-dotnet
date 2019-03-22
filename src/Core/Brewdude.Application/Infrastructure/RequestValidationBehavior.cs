@@ -21,8 +21,7 @@ namespace Brewdude.Application.Infrastructure
             _logger = logger;
         }
 
-        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
-            RequestHandlerDelegate<TResponse> next)
+        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             var context = new ValidationContext(request);
 
@@ -34,7 +33,7 @@ namespace Brewdude.Application.Infrastructure
 
             if (failures.Count != 0)
             {
-                _logger.LogInformation("RequestValidationBehaviour.Handle() - Validation failures for request {0}", request);
+                _logger.LogInformation("RequestValidationBehavior.Handle() - Validation failures for request {0}", request);
                 throw new ValidatorException(failures);
             }
 

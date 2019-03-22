@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Brewdude.Application.UserBreweries.GetBreweriesByUserId;
+using Brewdude.Domain.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using Brewdude.Domain.Entities;
 using FluentValidation;
 

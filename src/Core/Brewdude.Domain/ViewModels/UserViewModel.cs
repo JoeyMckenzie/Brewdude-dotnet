@@ -1,4 +1,4 @@
-namespace Brewdude.Application.User.Models
+namespace Brewdude.Domain.ViewModels
 {
     public class UserViewModel
     {

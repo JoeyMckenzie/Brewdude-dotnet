@@ -54,9 +54,9 @@ namespace Brewdude.Application.Tests.Infrastructure
         {
             var breweries = new[]
             {
-                new Domain.Entities.Brewery { Description = "One of Northern California's staple breweries", Name = "Fall River Brewery", City = "Redding", State = "CA", StreetAddress = "123 Cypress Ave", ZipCode = 96002, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Domain.Entities.Brewery { Description = "One of America's staple micro-macro breweries", Name = "Sierra Nevada Brewing Company", City = "Chico", State = "CA", StreetAddress = "123 Chico St", ZipCode = 98765, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Domain.Entities.Brewery { Description = "A Davis brewery", Name = "Sudwerk Brewing Company", City = "Davis", State = "CA", StreetAddress = "123 Davis St", ZipCode = 98675, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+                new Domain.Entities.Brewery { Description = "One of Northern California's staple breweries", Name = "Fall River Brewery", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Domain.Entities.Brewery { Description = "One of America's staple micro-macro breweries", Name = "Sierra Nevada Brewing Company", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Domain.Entities.Brewery { Description = "A Davis brewery", Name = "Sudwerk Brewing Company", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
             };
             context.Breweries.AddRange(breweries);
         }

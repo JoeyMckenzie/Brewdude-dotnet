@@ -1,0 +1,12 @@
+{
+  "StatusCode": 200,
+  "Message": "User joey32793 logged in successfully",
+  "Result": {
+    "id": "e78c7707-1c74-4b3a-9562-531a2f04b1ec",
+    "userName": "joey32793",
+    "email": "joey.mckenzie@gmail.com",
+    "role": "User",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImU3OGM3NzA3LTFjNzQtNGIzYS05NTYyLTUzMWEyZjA0YjFlYyIsImVtYWlsIjoiam9leS5tY2tlbnppZUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3VzZXJkYXRhIjpbImpvZXkzMjc5MyIsIkpvZXkiLCJNY2tlbnppZSJdLCJyb2xlIjoiVXNlciIsInNjb3BlcyI6WyJyZWFkOmJlZXIiLCJyZWFkOmJyZXdlcnkiXSwidXNlcm5hbWUiOiJqb2V5MzI3OTMiLCJuYmYiOjE1NTI3ODg5NzMsImV4cCI6MTU1Mjc5MDc3MywiaWF0IjoxNTUyNzg4OTczLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSJ9.Rkyti_I-fSLCjh-56WIOJ4pmDgB8F5RK9KsbES73f_k"
+  },
+  "Version": "0.1.0"
+}
