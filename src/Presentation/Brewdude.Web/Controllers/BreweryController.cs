@@ -6,13 +6,16 @@ using Brewdude.Application.Brewery.Commands.UpdateBrewery;
 using Brewdude.Application.Brewery.Queries.GetAllBreweries;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Brewdude.Domain.ViewModels;
+using Brewdude.Web.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Brewdude.Web.Controllers
 {
     [Authorize(Policy = "BrewdudeUserPolicy")]
+    [ModelStateValidationActionFilter]
     public class BreweryController : BrewdudeControllerBase
     {
         private readonly ILogger<BreweryController> _logger;
@@ -26,6 +29,7 @@ namespace Brewdude.Web.Controllers
         public async Task<ActionResult> GetAllBreweries()
         {
             _logger.LogInformation("Retrieving all breweries");
+            Log.Information("Retrieving all breweries");
             return Ok(await Mediator.Send(new GetAllBreweriesQuery()));
         }
 

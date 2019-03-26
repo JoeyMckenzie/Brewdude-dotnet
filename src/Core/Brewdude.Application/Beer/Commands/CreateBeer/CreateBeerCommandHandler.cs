@@ -1,15 +1,19 @@
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Brewdude.Application.Exceptions;
 using Brewdude.Common;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Persistence;
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Application.Beer.Commands.CreateBeer
 {
-    public class CreateBeerCommandHandler : IRequestHandler<CreateBeerCommand, int>
+    public class CreateBeerCommandHandler : IRequestHandler<CreateBeerCommand, BrewdudeApiResponse>
     {
         private readonly BrewdudeDbContext _context;
         private readonly IDateTime _dateTime;
@@ -20,14 +24,14 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
             _dateTime = dateTime;
         }
 
-        public async Task<int> Handle(CreateBeerCommand request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse> Handle(CreateBeerCommand request, CancellationToken cancellationToken)
         {
             // Validate beer to be added does not already exist
-            var existingBeer = await _context.Beers.FirstAsync(b =>
+            var existingBeer = await _context.Beers.SingleOrDefaultAsync(b =>
                 string.Equals(b.Name, request.Name, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
             
             if (existingBeer != null)
-                throw new BrewdudeUpdateOrCreationException($"Beer with name [{request.Name}] already exists");
+                throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, $"Beer with name [{request.Name}] already exists");
             
             var beer = new Domain.Entities.Beer
             {
@@ -44,7 +48,8 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
             _context.Beers.Add(beer);
             await _context.SaveChangesAsync(cancellationToken);
             
-            return beer.BeerId;
+            return new BrewdudeApiResponse((int)HttpStatusCode.Created, BrewdudeResponseMessage.Created.GetDescription());
+            // return beer.BeerId;
         }
     }
 }

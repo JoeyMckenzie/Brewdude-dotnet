@@ -6,7 +6,6 @@ namespace Brewdude.Domain.ViewModels
     public class BeerListViewModel
     {
         public IEnumerable<BeerDto> Beers { get; set; }
-        public int BeersResultLength { get; set; }
         public bool CanEdit { get; set; } = true;
     }
 }

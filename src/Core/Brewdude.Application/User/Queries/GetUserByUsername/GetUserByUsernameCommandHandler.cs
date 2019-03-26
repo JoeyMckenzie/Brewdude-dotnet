@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Brewdude.Application.Exceptions;
 using Brewdude.Application.Security;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.Entities;
 using Brewdude.Domain.ViewModels;
 using MediatR;
@@ -12,7 +15,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Brewdude.Application.User.Queries.GetUserByUsername
 {
-    public class GetUserByUsernameCommandHandler : IRequestHandler<GetUserByUsernameCommand, UserViewModel>
+    public class GetUserByUsernameCommandHandler : IRequestHandler<GetUserByUsernameCommand, BrewdudeApiResponse<UserViewModel>>
     {
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
@@ -25,22 +28,21 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
             _userManager = userManager;
         }
 
-        public async Task<UserViewModel> Handle(GetUserByUsernameCommand request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<UserViewModel>> Handle(GetUserByUsernameCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
             {
                 // Throw if user does not exist
-                throw new UserNotFoundException($"User with username [{request.Username}] does not exist");
+                throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.UserNotFound, $"No user with username [{request.Username}] was found");
             }
             
             // Validate the request user's password against the stored hash and salt
             var isVerifiedPassword = await _userManager.CheckPasswordAsync(user, request.Password);
-
             if (!isVerifiedPassword)
             {
                 // Throw on bad password
-                throw new ArgumentException($"Wrong password for user [{request.Username}]");
+                throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, $"Wrong password for user [{request.Username}]");
             }
 
             // Generate a token for immediate use
@@ -64,7 +66,7 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
             if (string.IsNullOrWhiteSpace(token))
             {
                 // Throw on token create error
-                throw new UserCreationException("Token generation failed during user creation");
+                throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, "Token generation failed during user creation");
             }   
             
             // Map the entity user to view model
@@ -72,7 +74,7 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
             userViewModel.Token = token;
             userViewModel.Role = userRole.ToString();
             
-            return userViewModel;
+            return new BrewdudeApiResponse<UserViewModel>((int)HttpStatusCode.OK, BrewdudeResponseMessage.Success.GetDescription(), userViewModel, 1);
         }
     }
 }

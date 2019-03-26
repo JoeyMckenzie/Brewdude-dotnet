@@ -5,10 +5,10 @@ using Brewdude.Application.Exceptions;
 using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using Brewdude.Middleware.Models;
-using Brewdude.Middleware.Wrappers;
-using Brewdude.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -26,51 +26,18 @@ namespace Brewdude.Web.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<ActionResult<ApiResponse>> Register([FromBody] CreateUserCommand createUserCommand)
+        public async Task<BrewdudeApiResponse<UserViewModel>> Register([FromBody] CreateUserCommand createUserCommand)
         {
-            UserViewModel user;
             _logger.LogInformation($"Sending request to create user {createUserCommand.Username} with email {createUserCommand.Email}");
-
-            try
-            {
-                user = await Mediator.Send(createUserCommand);
-            }
-            catch (Exception e)
-            {
-                return HandleUserErrorMessage(e);
-            }
-
-            if (user == null)
-                return BadRequest(new BrewdudeErrorViewModel("Unexpected system error attempting to create user, please try again"));
-
-            return Ok(user);
+            return await Mediator.Send(createUserCommand);
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<ApiResponse> Login([FromBody] GetUserByUsernameCommand request)
+        public async Task<BrewdudeApiResponse<UserViewModel>> Login([FromBody] GetUserByUsernameCommand request)
         {
             _logger.LogInformation($"Processing login attempt for user {request.Username}");
-            ApiResponse apiResponse;
-
-            try
-            {
-                var user = await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password));
-
-                if (user == null)
-                {
-                    throw new ApiException("User was not found", (int)HttpStatusCode.NotFound);
-                }
-                    
-                apiResponse = new ApiResponse((int)HttpStatusCode.OK, $"User {user.UserName} logged in successfully", user);
-
-            }
-            catch (Exception e)
-            {
-                throw new ApiException(e);
-            }
-
-            return apiResponse;
+            return await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password));
         }
         
         

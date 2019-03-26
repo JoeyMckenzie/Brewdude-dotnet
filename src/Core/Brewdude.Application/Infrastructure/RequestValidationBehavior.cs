@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Brewdude.Application.Exceptions;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain.Api;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -31,12 +34,12 @@ namespace Brewdude.Application.Infrastructure
                 .Where(f => f != null)
                 .ToList();
 
-            if (failures.Count != 0)
+            if (failures.Any())
             {
-                _logger.LogInformation("RequestValidationBehavior.Handle() - Validation failures for request {0}", request);
-                throw new ValidatorException(failures);
+                _logger.LogInformation($"Validation failures for request [{request}]");
+                throw new ValidationException(failures);
             }
-
+            
             return next();
         }
     }

@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.Dtos;
 using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
@@ -11,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Application.Beer.Queries.GetAllBeers
 {
-    public class GetAllBeersQueryHandler : IRequestHandler<GetAllBeersQuery, BeerListViewModel>
+    public class GetAllBeersQueryHandler : IRequestHandler<GetAllBeersQuery, BrewdudeApiResponse<BeerListViewModel>>
     {
         private readonly BrewdudeDbContext _context;
         private readonly IMapper _mapper;
@@ -22,18 +25,22 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
             _mapper = mapper;
         }
 
-        public async Task<BeerListViewModel> Handle(GetAllBeersQuery request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<BeerListViewModel>> Handle(GetAllBeersQuery request, CancellationToken cancellationToken)
         {
             var beers = await _context.Beers
                 .OrderBy(b => b.Name)
                 .ToListAsync(cancellationToken);
     
-            var model = new BeerListViewModel
+            var viewModel = new BeerListViewModel
             {
                 Beers = _mapper.Map<IEnumerable<BeerDto>>(beers)
             };
 
-            return model;
+            return new BrewdudeApiResponse<BeerListViewModel>(
+                (int)HttpStatusCode.OK, 
+                BrewdudeResponseMessage.Success.GetDescription(), 
+                viewModel,
+                viewModel.Beers.Count());
         }
     }
 }

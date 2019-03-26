@@ -1,40 +1,51 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Brewdude.Application.Brewery.Queries.GetBreweryById;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
 {
-    public class GetAllBreweriesQueryHandler : IRequestHandler<GetAllBreweriesQuery, BreweryViewModelList>
+    public class GetAllBreweriesQueryHandler : IRequestHandler<GetAllBreweriesQuery, BrewdudeApiResponse<BreweryViewModelList>>
     {
+        private readonly ILogger<GetAllBreweriesQueryHandler> _logger;
         private readonly BrewdudeDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetAllBreweriesQueryHandler(BrewdudeDbContext context, IMapper mapper)
+        public GetAllBreweriesQueryHandler(BrewdudeDbContext context, IMapper mapper, ILogger<GetAllBreweriesQueryHandler> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<BreweryViewModelList> Handle(GetAllBreweriesQuery request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<BreweryViewModelList>> Handle(GetAllBreweriesQuery request, CancellationToken cancellationToken)
         {
             var breweries = await _context.Breweries
                 .Include(b => b.Beers)
+                .Include(b => b.Address)
                 .OrderBy(b => b.Name)
                 .ToListAsync(cancellationToken);
 
-            var model = new BreweryViewModelList
+            var viewModel = new BreweryViewModelList
             {
-                Breweries = _mapper.Map<IEnumerable<BreweryViewModel>>(breweries)
+                Breweries = _mapper.Map<IEnumerable<BreweryViewModel>>(breweries),
             };
 
-            return model;
+            return new BrewdudeApiResponse<BreweryViewModelList>(
+                (int)HttpStatusCode.OK, 
+                BrewdudeResponseMessage.Success.GetDescription(), 
+                viewModel,
+                viewModel.Breweries.Count());
         }
     }
 }

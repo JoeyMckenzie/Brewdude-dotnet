@@ -1,9 +1,10 @@
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using MediatR;
 
 namespace Brewdude.Application.Beer.Queries.GetBeerById
 {
-    public class GetBeerByIdQuery : IRequest<BeerViewModel>
+    public class GetBeerByIdQuery : IRequest<BrewdudeApiResponse<BeerViewModel>>
     {
         public GetBeerByIdQuery(int beerId)
         {

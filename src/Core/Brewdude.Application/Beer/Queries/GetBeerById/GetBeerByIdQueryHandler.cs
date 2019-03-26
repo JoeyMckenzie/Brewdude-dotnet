@@ -1,14 +1,19 @@
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Application.Beer.Queries.GetBeerById
 {
-    public class GetBeerByIdQueryHandler : IRequestHandler<GetBeerByIdQuery, BeerViewModel>
+    public class GetBeerByIdQueryHandler : IRequestHandler<GetBeerByIdQuery, BrewdudeApiResponse<BeerViewModel>>
     {
         private readonly IMapper _mapper;
         private readonly BrewdudeDbContext _context;
@@ -19,14 +24,18 @@ namespace Brewdude.Application.Beer.Queries.GetBeerById
             _mapper = mapper;
         }
 
-        public async Task<BeerViewModel> Handle(GetBeerByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<BeerViewModel>> Handle(GetBeerByIdQuery request, CancellationToken cancellationToken)
         {
             var beer = await _context.Beers.FindAsync(request.BeerId);
             
             if (beer == null)
-                throw new BeerNotFoundException($"Beer [{request.BeerId}] not found");
-
-            return _mapper.Map<BeerViewModel>(beer);
+                throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BeerNotFound, $"Beer [{request.BeerId}] not found");
+            
+            return new BrewdudeApiResponse<BeerViewModel>(
+                (int)HttpStatusCode.OK, 
+                BrewdudeResponseMessage.Success.GetDescription(), 
+                _mapper.Map<BeerViewModel>(beer), 
+                1);
         }
     }
 }

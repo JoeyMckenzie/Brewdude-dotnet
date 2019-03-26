@@ -1,4 +1,5 @@
 using Brewdude.Domain.Entities;
+using Brewdude.Web.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;

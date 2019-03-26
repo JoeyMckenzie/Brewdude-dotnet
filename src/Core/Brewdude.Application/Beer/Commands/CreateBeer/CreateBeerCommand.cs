@@ -1,9 +1,10 @@
+using Brewdude.Domain.Api;
 using Brewdude.Domain.Entities;
 using MediatR;
 
 namespace Brewdude.Application.Beer.Commands.CreateBeer
 {
-    public class CreateBeerCommand : IRequest<int>
+    public class CreateBeerCommand : IRequest<BrewdudeApiResponse>
     {
         public string Name { get; set; }
         public string Description { get; set; }

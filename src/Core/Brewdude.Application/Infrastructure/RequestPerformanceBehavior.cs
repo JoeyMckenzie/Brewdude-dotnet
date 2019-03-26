@@ -26,7 +26,7 @@ namespace Brewdude.Application.Infrastructure
             if (_timer.ElapsedMilliseconds > 500)
             {
                 var name = typeof(TRequest).Name;
-                _logger.LogWarning("RequestPerformanceBehavior.Handle() - Brewdude Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", name, _timer.ElapsedMilliseconds, request);
+                _logger.LogWarning("Brewdude Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", name, _timer.ElapsedMilliseconds, request);
             }
 
             return response;

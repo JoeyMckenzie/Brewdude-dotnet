@@ -28,6 +28,7 @@ using Brewdude.Infrastructure;
 using Brewdude.Jwt.Services;
 using Brewdude.Middleware.Extensions;
 using Brewdude.Persistence;
+using Brewdude.Web.Infrastructure;
 using FluentValidation.AspNetCore;
 using MediatR;
 using MediatR.Pipeline;
@@ -43,6 +44,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace Brewdude.Web
 {
@@ -66,7 +68,7 @@ namespace Brewdude.Web
             var jwtSigningSecret = Encoding.ASCII.GetBytes(_jwtSecret);
             
             // Register query handler assemblies
-            var assemblies = new Assembly[]
+            var assemblies = new[]
             {
                 typeof(GetAllBeersQueryHandler).GetTypeInfo().Assembly,
                 typeof(GetBeerByIdQueryHandler).GetTypeInfo().Assembly,
@@ -76,8 +78,8 @@ namespace Brewdude.Web
                 typeof(UpdateBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetAllBreweriesQueryHandler).GetTypeInfo().Assembly,
                 typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
-                typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
                 typeof(CreateUserCommandHandler).GetTypeInfo().Assembly,
+                typeof(CreateBreweryCommandHandler).GetTypeInfo().Assembly,
                 typeof(UpdateBreweryCommandHandler).GetTypeInfo().Assembly,
                 typeof(DeleteBreweryCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetUserByIdCommandHandler).GetTypeInfo().Assembly,
@@ -88,6 +90,11 @@ namespace Brewdude.Web
             services.AddAutoMapper(typeof(MappingProfile).GetTypeInfo().Assembly);
             services.AddTransient<IDateTime, MachineDateTime>();
             services.AddTransient<ITokenService>(_ => new TokenService(_jwtSecret));
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddSerilog();
+                loggingBuilder.AddSeq(Configuration.GetSection("Seq"));
+            });
             
             // Add EF Core
             services.AddDbContext<BrewdudeDbContext>(options =>
@@ -108,7 +115,7 @@ namespace Brewdude.Web
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehavior<,>));
             services.AddMediatR(assemblies);
             
-            // Add JWT authenication
+            // Add JWT authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -169,19 +176,16 @@ namespace Brewdude.Web
                 });
             });
 
-
+            // ASP.NET Core dependencies and Fluent Validators
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddFluentValidation(fv =>
                 {
-                    fv.RegisterValidatorsFromAssemblyContaining<CreateBeerCommandValidator>();
-                    fv.RegisterValidatorsFromAssemblyContaining<UpdateBeerCommandValidator>();
-                    fv.RegisterValidatorsFromAssemblyContaining<CreateBreweryCommandValidator>();
-                    fv.RegisterValidatorsFromAssemblyContaining<UpdateBreweryCommandValidator>();
+                    // Only need to register one validators, as they all stem from the same assembly
                     fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
-                    fv.RegisterValidatorsFromAssemblyContaining<GetUserByUsernameCommandValidator>();
                 });
+            services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -229,7 +233,7 @@ namespace Brewdude.Web
                 .AllowAnyHeader()
                 .AllowCredentials());
 
-            // app.UseApiResponseMiddleware();
+            app.UseErrorHandlingMiddleware();
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();

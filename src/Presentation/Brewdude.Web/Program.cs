@@ -17,13 +17,24 @@ namespace Brewdude.Web
     {
         public static void Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.File("../../../logs/Brewdude-.log", rollingInterval: RollingInterval.Month)
-                .CreateLogger();
+//            Log.Logger = new LoggerConfiguration()
+//                .MinimumLevel.Debug()
+//                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+//                .Enrich.FromLogContext()
+//                .WriteTo.File("../../../logs/Brewdude-.log", rollingInterval: RollingInterval.Month)
+//                .CreateLogger();
+//            Log.Logger = new LoggerConfiguration()
+//                .WriteTo.Console()
+//                .WriteTo.Seq("http://localhost:5341")
+//                .CreateLogger();
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
 
+            var loggerConfiguration = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+            
             var host = CreateWebHostBuilder(args).Build();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -38,17 +49,18 @@ namespace Brewdude.Web
                         var identityContext = scope.ServiceProvider.GetService<BrewdudeIdentityContext>();
 
                         // Drop the tables to recreate them with fresh data every server re-roll
-                        /*
-                        Console.WriteLine("Initializing database contexts");
-                        var timer = new Stopwatch();
-                        timer.Start();
-                        context.Database.EnsureDeleted();
-                        context.Database.EnsureCreated();
-                        identityContext.Database.Migrate();
-                        BrewdudeDbInitializer.Initialize(context);
-                        timer.Stop();
-                        Console.WriteLine($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
-                        */
+                        if (context.Database.EnsureCreated())
+                        {
+                            Log.Information("Initializing database contexts");
+                            var timer = new Stopwatch();
+                            timer.Start();
+                            context.Database.EnsureDeleted();
+                            context.Database.EnsureCreated();
+                            identityContext.Database.Migrate();
+                            BrewdudeDbInitializer.Initialize(context);
+                            timer.Stop();
+                            Log.Information($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
+                        }
                     }
                     catch (Exception e)
                     {
