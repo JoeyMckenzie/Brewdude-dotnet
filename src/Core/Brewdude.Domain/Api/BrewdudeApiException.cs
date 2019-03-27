@@ -12,6 +12,7 @@ namespace Brewdude.Domain
             StatusCode = statusCode;
             ResponseMessage = responseMessage;
             Errors = error;
+            ApiErrors = new List<BrewdudeApiError>();
         }
 
         public HttpStatusCode StatusCode { get; set; }

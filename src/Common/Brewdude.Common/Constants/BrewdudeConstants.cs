@@ -9,11 +9,15 @@ namespace Brewdude.Common.Constants
     /// </summary>
     public static class BrewdudeConstants
     {
+        public const string Version = "0.1.0-beta";
         public static readonly Regex PasswordRegex = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,20}$");
         public static readonly Regex StreetAddressRegex = new Regex("\\d{1,5}\\s(\\b\\w*\\b\\s){1,2}\\w*\\.");
         public static readonly Regex ZipCodeRegex = new Regex("^\\d{5}$");
-        public static readonly JsonSerializerSettings BrewdudeJsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-        public const string Version = "0.1.0-beta";
+        public static readonly JsonSerializerSettings BrewdudeJsonSerializerSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            NullValueHandling = NullValueHandling.Ignore
+        };
         
         // Response messages
         public const string SuccessfulRequestMessage = "Request was successful";

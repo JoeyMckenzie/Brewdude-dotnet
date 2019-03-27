@@ -6,8 +6,7 @@ using Brewdude.Application.Beer.Queries.GetAllBeers;
 using Brewdude.Application.Beer.Queries.GetBeerById;
 using Brewdude.Common.Extensions;
 using Brewdude.Domain.Api;
-using Brewdude.Middleware.Models;
-using Brewdude.Web.Filters;
+using Brewdude.Middleware.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -50,7 +49,6 @@ namespace Brewdude.Web.Controllers
         {
             _logger.LogInformation($"Creating beer [{createBeerCommand.Name}] for user [{_userIdOnRequest}]");
             return Created(BrewdudeResponseMessage.Created.GetDescription(), await Mediator.Send(createBeerCommand));
-            // return Ok(await Mediator.Send(createBeerCommand));
         }
 
         [HttpPut("{id}")]

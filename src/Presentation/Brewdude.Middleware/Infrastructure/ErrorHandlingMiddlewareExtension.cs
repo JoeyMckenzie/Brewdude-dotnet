@@ -1,3 +1,4 @@
+using Brewdude.Middleware.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 
 namespace Brewdude.Web.Infrastructure

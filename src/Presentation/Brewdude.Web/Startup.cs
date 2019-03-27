@@ -26,7 +26,6 @@ using Brewdude.Common;
 using Brewdude.Domain.Entities;
 using Brewdude.Infrastructure;
 using Brewdude.Jwt.Services;
-using Brewdude.Middleware.Extensions;
 using Brewdude.Persistence;
 using Brewdude.Web.Infrastructure;
 using FluentValidation.AspNetCore;

@@ -33,6 +33,12 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
             if (existingBeer != null)
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, $"Beer with name [{request.Name}] already exists");
             
+            // Validate an existing brewery to add the beer
+            var existingBrewery = await _context.Breweries.FindAsync(request.BreweryId);
+            
+            if (existingBrewery == null)
+                throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BreweryNotFound, $"No brewery with ID [{request.BreweryId}] was found");
+            
             var beer = new Domain.Entities.Beer
             {
                 Name = request.Name,
@@ -49,7 +55,6 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
             await _context.SaveChangesAsync(cancellationToken);
             
             return new BrewdudeApiResponse((int)HttpStatusCode.Created, BrewdudeResponseMessage.Created.GetDescription());
-            // return beer.BeerId;
         }
     }
 }

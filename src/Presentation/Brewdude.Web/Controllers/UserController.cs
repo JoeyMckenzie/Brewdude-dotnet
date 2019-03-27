@@ -1,14 +1,9 @@
-using System;
-using System.Net;
 using System.Threading.Tasks;
-using Brewdude.Application.Exceptions;
 using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
-using Brewdude.Domain;
 using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
-using Brewdude.Middleware.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -43,33 +38,10 @@ namespace Brewdude.Web.Controllers
         
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse>> GetUserById(int id)
+        public async Task<ActionResult> GetUserById(int id)
         {
-            UserViewModel user;
-
-            try
-            {
-                user = await Mediator.Send(new GetUserByIdCommand(id));
-            }
-            catch (Exception e)
-            {
-                return HandleUserErrorMessage(e);
-            }
-
-            if (user == null)
-                return BadRequest("Error retrieving user");
-
-            return Ok(user);
-        }
-
-        private ActionResult<ApiResponse> HandleUserErrorMessage(Exception e)
-        {
-            var errorResponse = new ApiResponse((int)HttpStatusCode.BadRequest, e.Message);
-                
-            if (e is UserNotFoundException)
-                return NotFound(errorResponse);
-
-            return BadRequest(errorResponse);
+            _logger.LogInformation($"Retrieving user [{id}]");
+            return Ok(await Mediator.Send(new GetUserByIdCommand(id)));
         }
     }
 }
