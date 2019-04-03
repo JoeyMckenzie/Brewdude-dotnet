@@ -1,7 +1,11 @@
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Application.Exceptions;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using Brewdude.Persistence;
 using MediatR;
@@ -10,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Brewery.Queries.GetBreweryById
 {
-    public class GetBreweryByIdQueryHandler : IRequestHandler<GetBreweryByIdQuery, BreweryViewModel>
+    public class GetBreweryByIdQueryHandler : IRequestHandler<GetBreweryByIdQuery, BrewdudeApiResponse<BreweryViewModel>>
     {
         private readonly ILogger<GetBreweryByIdQueryHandler> _logger;
         private readonly BrewdudeDbContext _context;
@@ -23,7 +27,7 @@ namespace Brewdude.Application.Brewery.Queries.GetBreweryById
             _logger = logger;
         }
 
-        public async Task<BreweryViewModel> Handle(GetBreweryByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<BreweryViewModel>> Handle(GetBreweryByIdQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Retrieving brewery with ID [{request.BreweryId}]");
             
@@ -32,9 +36,13 @@ namespace Brewdude.Application.Brewery.Queries.GetBreweryById
                 .SingleOrDefaultAsync(b => b.BreweryId == request.BreweryId, cancellationToken);
             
             if (brewery == null)
-                throw new BreweryNotFound($"Brewery [{request.BreweryId}] not found");
+                throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BreweryNotFound, $"Brewery [{request.BreweryId}] not found");
             
-            return _mapper.Map<BreweryViewModel>(brewery);
+            return new BrewdudeApiResponse<BreweryViewModel>(
+                (int)HttpStatusCode.OK, 
+                BrewdudeResponseMessage.Success.GetDescription(), 
+                _mapper.Map<BreweryViewModel>(brewery), 
+                1);
         }
     }
 }

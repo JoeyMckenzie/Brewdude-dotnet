@@ -19,7 +19,7 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserBeersViewModel>> GetBeersByUserId(int id)
+        public async Task<ActionResult<UserBeersViewModel>> GetBeersByUserId(string id)
         {
             _logger.LogInformation($"Retrieving beers for user [{id}]");
 

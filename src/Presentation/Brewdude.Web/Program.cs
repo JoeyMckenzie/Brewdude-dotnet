@@ -46,21 +46,21 @@ namespace Brewdude.Web
                     try
                     {
                         var context = scope.ServiceProvider.GetService<BrewdudeDbContext>();
-                        var identityContext = scope.ServiceProvider.GetService<BrewdudeIdentityContext>();
+                        var identityContext = scope.ServiceProvider.GetService<BrewdudeDbIdentityContext>();
 
                         // Drop the tables to recreate them with fresh data every server re-roll
-                        if (context.Database.EnsureCreated())
+                        Console.WriteLine("Initializing database contexts");
+                        var timer = new Stopwatch();
+                        timer.Start();
+                        if (args != null && args.Length > 0)
                         {
-                            Log.Information("Initializing database contexts");
-                            var timer = new Stopwatch();
-                            timer.Start();
                             context.Database.EnsureDeleted();
-                            context.Database.EnsureCreated();
-                            identityContext.Database.Migrate();
-                            BrewdudeDbInitializer.Initialize(context);
-                            timer.Stop();
-                            Log.Information($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
                         }
+                        context.Database.EnsureCreated();
+                        identityContext.Database.Migrate();
+                        BrewdudeDbInitializer.Initialize(context, identityContext);
+                        timer.Stop();
+                        Console.WriteLine($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
                     }
                     catch (Exception e)
                     {

@@ -1,9 +1,11 @@
-using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Brewdude.Application.Exceptions;
 using Brewdude.Common;
+using Brewdude.Common.Extensions;
+using Brewdude.Domain;
+using Brewdude.Domain.Api;
 using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
 using MediatR;
@@ -11,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
 {
-    public class UpdateBreweryCommandHandler : IRequestHandler<UpdateBreweryCommand>
+    public class UpdateBreweryCommandHandler : IRequestHandler<UpdateBreweryCommand, BrewdudeApiResponse>
     {
         private readonly ILogger<UpdateBreweryCommandHandler> _logger;
         private readonly BrewdudeDbContext _context;
@@ -26,15 +28,12 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
             _dateTime = dateTime;
         }
 
-        public async Task<Unit> Handle(UpdateBreweryCommand request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse> Handle(UpdateBreweryCommand request, CancellationToken cancellationToken)
         {
             var breweryToUpdate = await _context.Breweries.FindAsync(request.BreweryId);
 
             if (breweryToUpdate == null)
-            {
-                _logger.LogError($"Could not update brewery with ID [{request.BreweryId}], no brewery found");
-                throw new BreweryNotFound($"Brewery [{request.BreweryId}] not found to update");
-            }
+                throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BreweryNotFound, $"Brewery [{request.BreweryId}] not found to update");
 
             // Update brewery values
             breweryToUpdate.Name = request.Name;
@@ -46,7 +45,7 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
             await _context.SaveChangesAsync(cancellationToken);
             _logger.LogInformation($"Successfully updated brewery with ID [{request.BreweryId}]");
 
-            return Unit.Value;
+            return new BrewdudeApiResponse((int)HttpStatusCode.OK, BrewdudeResponseMessage.Success.GetDescription());
         }
     }
 }

@@ -1,9 +1,10 @@
+using Brewdude.Domain.Api;
 using Brewdude.Domain.Dtos;
 using MediatR;
 
 namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
 {
-    public class UpdateBreweryCommand : IRequest
+    public class UpdateBreweryCommand : IRequest<BrewdudeApiResponse>
     {
         public UpdateBreweryCommand(int breweryId)
         {

@@ -99,13 +99,13 @@ namespace Brewdude.Web
             services.AddDbContext<BrewdudeDbContext>(options =>
                 options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
 
-            services.AddDbContext<BrewdudeIdentityContext>(options =>
+            services.AddDbContext<BrewdudeDbIdentityContext>(options =>
                 options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
 
             // Add Identity
             services.AddDefaultIdentity<BrewdudeUser>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<BrewdudeIdentityContext>()
+                .AddEntityFrameworkStores<BrewdudeDbIdentityContext>()
                 .AddDefaultTokenProviders();
             
             // Add MediatR
@@ -126,7 +126,7 @@ namespace Brewdude.Web
                 {
                     OnTokenValidated = context =>
                     {
-                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeIdentityContext>();
+                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbIdentityContext>();
                         var userIdParsedSuccessfully = int.TryParse(context.Principal.Identity.Name, out var userId);
                         if (!userIdParsedSuccessfully)
                         {

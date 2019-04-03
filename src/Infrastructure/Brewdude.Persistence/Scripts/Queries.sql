@@ -6,11 +6,16 @@ select
        b.Abv,
        b.Ibu,
        b.BreweryId,
-       u.UserId
+       anu.Id
 from Beers b
   join UserBeers ub on ub.BeerId = b.BeerId
-  join Users u on ub.UserId = u.UserId
-where u.UserId = 1;
+  join AspNetUsers anu on ub.UserId = anu.Id
+where anu.Id = (
+  select 
+         anu.Id 
+  from AspNetUsers anu
+  where anu.UserName = 'joey.mckenzie'
+       );
 
 -- Get breweries by user
 select 

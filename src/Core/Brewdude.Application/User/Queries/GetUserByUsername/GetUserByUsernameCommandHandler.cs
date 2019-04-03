@@ -17,15 +17,15 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
 {
     public class GetUserByUsernameCommandHandler : IRequestHandler<GetUserByUsernameCommand, BrewdudeApiResponse<UserViewModel>>
     {
+        private readonly UserManager<BrewdudeUser> _userManager;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
-        private readonly UserManager<BrewdudeUser> _userManager;
 
         public GetUserByUsernameCommandHandler(IMapper mapper, ITokenService tokenService, UserManager<BrewdudeUser> userManager)
         {
-            _mapper = mapper;
             _tokenService = tokenService;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         public async Task<BrewdudeApiResponse<UserViewModel>> Handle(GetUserByUsernameCommand request, CancellationToken cancellationToken)
@@ -67,14 +67,18 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
             {
                 // Throw on token create error
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, "Token generation failed during user creation");
-            }   
+            }
             
             // Map the entity user to view model
             var userViewModel = _mapper.Map<UserViewModel>(user);
             userViewModel.Token = token;
             userViewModel.Role = userRole.ToString();
             
-            return new BrewdudeApiResponse<UserViewModel>((int)HttpStatusCode.OK, BrewdudeResponseMessage.Success.GetDescription(), userViewModel, 1);
+            return new BrewdudeApiResponse<UserViewModel>(
+                (int)HttpStatusCode.OK, 
+                BrewdudeResponseMessage.Success.GetDescription(), 
+                userViewModel, 
+                1);
         }
     }
 }

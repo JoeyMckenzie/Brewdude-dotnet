@@ -28,8 +28,8 @@ namespace Brewdude.Persistence.Infrastructure
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(basePath)
                 .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.Local.json", optional: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+                .AddJsonFile($"appsettings.Local.json", true)
+                .AddJsonFile($"appsettings.{environmentName}.json", true)
                 .AddEnvironmentVariables()
                 .Build();
             var connectionString = configuration.GetConnectionString(ConnectionStringName);

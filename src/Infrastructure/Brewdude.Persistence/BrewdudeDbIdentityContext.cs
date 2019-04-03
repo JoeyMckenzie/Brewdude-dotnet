@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Persistence
 {
-    public class BrewdudeIdentityContext : IdentityDbContext<BrewdudeUser>
+    public class BrewdudeDbIdentityContext : IdentityDbContext<BrewdudeUser>
     {
-        public BrewdudeIdentityContext(DbContextOptions options)
+        public BrewdudeDbIdentityContext(DbContextOptions options)
             : base(options)
         {
         }

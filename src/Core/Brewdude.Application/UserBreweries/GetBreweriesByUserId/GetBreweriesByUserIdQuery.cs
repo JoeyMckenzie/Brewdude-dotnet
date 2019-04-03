@@ -5,11 +5,11 @@ namespace Brewdude.Application.UserBreweries.GetBreweriesByUserId
 {
     public class GetBreweriesByUserIdQuery : IRequest<UserBreweriesViewModel>
     {
-        public GetBreweriesByUserIdQuery(int userId)
+        public GetBreweriesByUserIdQuery(string userId)
         {
             UserId = userId;
         }
         
-        public int UserId { get; }
+        public string UserId { get; }
     }
 }

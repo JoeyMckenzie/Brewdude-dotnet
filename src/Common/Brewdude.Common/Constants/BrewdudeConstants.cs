@@ -9,10 +9,8 @@ namespace Brewdude.Common.Constants
     /// </summary>
     public static class BrewdudeConstants
     {
+        // Meta constants
         public const string Version = "0.1.0-beta";
-        public static readonly Regex PasswordRegex = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,20}$");
-        public static readonly Regex StreetAddressRegex = new Regex("\\d{1,5}\\s(\\b\\w*\\b\\s){1,2}\\w*\\.");
-        public static readonly Regex ZipCodeRegex = new Regex("^\\d{5}$");
         public static readonly JsonSerializerSettings BrewdudeJsonSerializerSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -31,5 +29,14 @@ namespace Brewdude.Common.Constants
         public const string CreatedMessage = "Entity created successfully.";
         public const string UpdatedMessage = "Entity updated successfully.";
         public const string DeletedMessage = "Entity Deleted successfully.";
+        
+        // Validation Constants
+        public static readonly Regex PasswordRegex = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,20}$");
+        public static readonly Regex StreetAddressRegex = new Regex("\\d{1,5}\\s(\\b\\w*\\b\\s){1,2}\\w*\\.");
+        public static readonly Regex ZipCodeRegex = new Regex("^\\d{5}$");
+        public static readonly Regex ValidNameRegex = new Regex("^[a-zA-Z-' ]+$");
+        public const int MaxNameLength = 32;
+        public const int MaxEmailLength = 32;
+        public const int MaxUsernameLength = 16;
     }
 }

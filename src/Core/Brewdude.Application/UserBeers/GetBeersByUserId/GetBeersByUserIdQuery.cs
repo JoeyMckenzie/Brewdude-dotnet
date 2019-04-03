@@ -1,15 +1,16 @@
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using MediatR;
 
 namespace Brewdude.Application.UserBeers.GetBeersByUserId
 {
-    public class GetBeersByUserIdQuery : IRequest<UserBeersViewModel>
+    public class GetBeersByUserIdQuery : IRequest<BrewdudeApiResponse<UserBeersViewModel>>
     {
-        public GetBeersByUserIdQuery(int userId)
+        public GetBeersByUserIdQuery(string userId)
         {
             UserId = userId;
         }
         
-        public int UserId { get; }
+        public string UserId { get; }
     }
 }

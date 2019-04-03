@@ -5,7 +5,7 @@ namespace Brewdude.Domain.ViewModels
     public class UserBreweriesViewModel
     {
         public IEnumerable<UserBreweryDto> Breweries { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public bool CanEdit { get; set; }
     }
 }

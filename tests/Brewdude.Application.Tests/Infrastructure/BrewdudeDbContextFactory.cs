@@ -6,21 +6,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Application.Tests.Infrastructure
 {
-    public class BrewdudeDbContextFactory
+    public static class BrewdudeDbContextFactory
     {
+        private const string UserName = "joey.mckenzie";
+        
         public static BrewdudeDbContext Create()
         {
             var options = new DbContextOptionsBuilder<BrewdudeDbContext>()
                 .UseInMemoryDatabase("Brewdude.Application.Tests.Db")
                 .Options;
             
+            var identityOptions = new DbContextOptionsBuilder<BrewdudeDbIdentityContext>()
+                .UseInMemoryDatabase("Brewdude.Application.Tests.Db")
+                .Options;
+            
             var context = new BrewdudeDbContext(options);
             context.Database.EnsureCreated();
             
+            var identityContext = new BrewdudeDbIdentityContext(identityOptions);
+            identityContext.Database.EnsureCreated();
+            
             SeedBreweries(context);
+            UpdateBreweryAddressesWithBreweryId(context);
             SeedBeers(context);
-            SeedUsers(context);
-            SeedUsersBeers(context);
             
             return context;
         }
@@ -31,36 +39,6 @@ namespace Brewdude.Application.Tests.Infrastructure
             context.Dispose();
         }
 
-        private static void SeedUsers(BrewdudeDbContext context)
-        {
-            context.Users.Add(new Domain.Entities.User
-            {
-                Username = "joey.mckenzie27",
-            });
-            context.SaveChanges();
-        }
-
-        private static void SeedUsersBeers(BrewdudeDbContext context)
-        {
-            context.UserBeers.AddRange(new[]
-            {
-                new Domain.Entities.UserBeers { UserId = 1, BeerId = 3 },
-                new Domain.Entities.UserBeers { UserId = 1, BeerId = 1 }
-            });
-            context.SaveChanges();
-        }
-
-        private static void SeedBreweries(BrewdudeDbContext context)
-        {
-            var breweries = new[]
-            {
-                new Domain.Entities.Brewery { Description = "One of Northern California's staple breweries", Name = "Fall River Brewery", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Domain.Entities.Brewery { Description = "One of America's staple micro-macro breweries", Name = "Sierra Nevada Brewing Company", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Domain.Entities.Brewery { Description = "A Davis brewery", Name = "Sudwerk Brewing Company", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
-            };
-            context.Breweries.AddRange(breweries);
-        }
-        
         private static void SeedBeers(BrewdudeDbContext context)
         {
             context.Beers.Add(new Domain.Entities.Beer
@@ -72,7 +50,7 @@ namespace Brewdude.Application.Tests.Infrastructure
                 BeerStyle = BeerStyle.Ipa, 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                BreweryId = 1
+                BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery").BreweryId
             });
 
             context.Beers.Add(new Domain.Entities.Beer
@@ -84,7 +62,7 @@ namespace Brewdude.Application.Tests.Infrastructure
                 BeerStyle = BeerStyle.NewEnglandIpa, 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                BreweryId = 1
+                BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery").BreweryId
             });
 
             context.Beers.Add(new Domain.Entities.Beer
@@ -96,7 +74,7 @@ namespace Brewdude.Application.Tests.Infrastructure
                 BeerStyle = BeerStyle.PaleAle, 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                BreweryId = 2
+                BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Sierra Nevada Brewing Company").BreweryId
             });
 
             context.Beers.Add(new Domain.Entities.Beer
@@ -108,8 +86,79 @@ namespace Brewdude.Application.Tests.Infrastructure
                 BeerStyle = BeerStyle.Lager, 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                BreweryId = 3
+                BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Sudwerk Brewing Company").BreweryId
             });
+            
+            context.SaveChanges();
+        }
+
+        private static void SeedBreweries(BrewdudeDbContext context)
+        {
+            var breweries = new[]
+            {
+                new Domain.Entities.Brewery
+                {
+                    Description = "One of Northern California's staple breweries", 
+                    Name = "Fall River Brewery", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow, 
+                    Website = "http://fallriverbrewing.com/",
+                    Address = new Address
+                    {
+                        City = "Redding",
+                        State = "CA",
+                        StreetAddress = "123 Cypress Ave",
+                        ZipCode = 96002
+                    }
+                },
+                new Domain.Entities.Brewery
+                {
+                    Description = "One of America's staple micro-macro breweries", 
+                    Name = "Sierra Nevada Brewing Company", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow, 
+                    Website = "https://www.sierranevada.com/",
+                    Address = new Address
+                    {
+                        City = "Chico",
+                        State = "CA",
+                        StreetAddress = "123 Chico St",
+                        ZipCode = 98765
+                    }
+                },
+                new Domain.Entities.Brewery
+                {
+                    Description = "A Davis brewery", 
+                    Name = "Sudwerk Brewing Company", 
+                    CreatedAt = DateTime.UtcNow, 
+                    UpdatedAt = DateTime.UtcNow, 
+                    Website = "https://sudwerkbrew.com/",
+                    Address = new Address
+                    {
+                        City = "Davis",
+                        State = "CA",
+                        StreetAddress = "123 Davis St",
+                        ZipCode = 12345
+                    }
+                }
+            };
+            
+            context.Breweries.AddRange(breweries);
+            context.SaveChanges();
+        }
+
+        private static void UpdateBreweryAddressesWithBreweryId(BrewdudeDbContext context)
+        {
+            var fallRiverBrewery = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery");
+            var sierraNevadaBrewery = context.Breweries.FirstOrDefault(b => b.Name == "Sierra Nevada Brewing Company");
+            var sudwerkBrewingCompany = context.Breweries.FirstOrDefault(b => b.Name == "Sudwerk Brewing Company");
+            var breweries = new[] {fallRiverBrewery, sierraNevadaBrewery, sudwerkBrewingCompany};
+
+            fallRiverBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Redding").AddressId;
+            sierraNevadaBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Chico").AddressId;
+            sudwerkBrewingCompany.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Davis").AddressId;
+            
+            context.Breweries.UpdateRange(breweries);
             context.SaveChanges();
         }
     }

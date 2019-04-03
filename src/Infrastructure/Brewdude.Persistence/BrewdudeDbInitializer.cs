@@ -7,21 +7,38 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Persistence
 {
-    public class BrewdudeDbInitializer
+    public static class BrewdudeDbInitializer
     {
-        public static void Initialize(BrewdudeDbContext context)
+        private const string UserName = "joey.mckenzie";
+        
+        public static void Initialize(BrewdudeDbContext context, BrewdudeDbIdentityContext identityContext)
         {
-            var instance = new BrewdudeDbInitializer();
-            SeedEntities(context);
+            SeedEntities(context, identityContext);
         }
 
-        private static void SeedEntities(BrewdudeDbContext context)
+        private static void SeedEntities(BrewdudeDbContext context, BrewdudeDbIdentityContext identityContext)
         {
+            SeedUsers(identityContext, out string userId);
             SeedBreweries(context);
             UpdateBreweryAddressesWithBreweryId(context);
             SeedBeers(context);
-            SeedUserBeers(context);
-            SeedUserBreweries(context);
+            SeedUserBeers(context, userId);
+            SeedUserBreweries(context, userId);
+        }
+
+        private static void SeedUsers(BrewdudeDbIdentityContext identityContext, out string userId)
+        {
+            var brewdudeUser = new BrewdudeUser
+            {
+                UserName = UserName
+            };
+
+            identityContext.Users.Add(brewdudeUser);
+            identityContext.SaveChangesAsync();
+
+            userId = identityContext.Users.
+                SingleOrDefault(u => string.Equals(u.UserName, UserName, StringComparison.CurrentCultureIgnoreCase))
+                ?.Id;
         }
 
         private static void SeedBeers(BrewdudeDbContext context)
@@ -147,25 +164,25 @@ namespace Brewdude.Persistence
             context.SaveChanges();
         }
 
-        private static void SeedUserBeers(BrewdudeDbContext context)
+        private static void SeedUserBeers(BrewdudeDbContext context, string userId)
         {
             var userBeers = new[]
             {
-                new UserBeers { UserId = 1, BeerId = 1 },
-                new UserBeers { UserId = 1, BeerId = 3 }
+                new UserBeers { UserId = userId, BeerId = 1 },
+                new UserBeers { UserId = userId, BeerId = 3 }
             };
             
             context.UserBeers.AddRange(userBeers);
             context.SaveChanges();
         }
 
-        private static void SeedUserBreweries(BrewdudeDbContext context)
+        private static void SeedUserBreweries(BrewdudeDbContext context, string userId)
         {
             var userBreweries = new[]
             {
-                new UserBreweries { UserId = 2, BreweryId = 2 },
-                new UserBreweries { UserId = 2, BreweryId = 3 },
-                new UserBreweries { UserId = 1, BreweryId = 1 }
+                new UserBreweries { UserId = userId, BreweryId = 2 },
+                new UserBreweries { UserId = userId, BreweryId = 3 },
+                new UserBreweries { UserId = userId, BreweryId = 1 }
             };
             
             context.UserBreweries.AddRange(userBreweries);

@@ -1,3 +1,4 @@
+using Brewdude.Common.Constants;
 using Brewdude.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,13 +12,13 @@ namespace Brewdude.Persistence.Configurations
         {
             builder.Property(u => u.UserId).HasColumnName("UserId");
 
-            builder.Property(u => u.FirstName).HasMaxLength(32).IsRequired();
+            builder.Property(u => u.FirstName).HasMaxLength(BrewdudeConstants.MaxNameLength).IsRequired();
 
-            builder.Property(u => u.LastName).HasMaxLength(32).IsRequired();
+            builder.Property(u => u.LastName).HasMaxLength(BrewdudeConstants.MaxNameLength).IsRequired();
 
-            builder.Property(u => u.Username).HasMaxLength(16).IsRequired();
+            builder.Property(u => u.Username).HasMaxLength(BrewdudeConstants.MaxUsernameLength).IsRequired();
 
-            builder.Property(u => u.Email).HasMaxLength(32).IsRequired();
+            builder.Property(u => u.Email).HasMaxLength(BrewdudeConstants.MaxEmailLength).IsRequired();
 
             builder.Property(u => u.Role)
                 .HasConversion(new EnumToStringConverter<Role>())

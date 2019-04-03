@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Brewdude.Application.Brewery.Commands.CreateBrewery;
 using Brewdude.Application.Brewery.Commands.DeleteBrewery;
@@ -7,12 +6,10 @@ using Brewdude.Application.Brewery.Queries.GetAllBreweries;
 using Brewdude.Application.Brewery.Queries.GetBreweryById;
 using Brewdude.Common.Extensions;
 using Brewdude.Domain.Api;
-using Brewdude.Domain.ViewModels;
 using Brewdude.Middleware.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Brewdude.Web.Controllers
 {

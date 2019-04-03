@@ -28,9 +28,6 @@ namespace Brewdude.Application.UserBreweries.GetBreweriesByUserId
                 from b in _context.Breweries
                 join ub in _context.UserBreweries
                     on b.BreweryId equals ub.BreweryId
-                join u in _context.Users
-                    on ub.UserId equals u.UserId
-                where u.UserId == request.UserId
                 select b
             ).Include(b => b.Beers)
                 .ToListAsync(cancellationToken);

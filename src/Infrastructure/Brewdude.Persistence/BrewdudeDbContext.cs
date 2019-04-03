@@ -12,8 +12,6 @@ namespace Brewdude.Persistence
         public DbSet<UserBreweries> UserBreweries { get; set; }
         public DbSet<User> Users { get; set; }
         
-        public DbSet<BrewdudeUser> BrewdudeUsers { get; set; }
-
         public BrewdudeDbContext(DbContextOptions<BrewdudeDbContext> options)
             : base(options)
         {

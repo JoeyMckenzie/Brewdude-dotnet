@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Brewdude.Persistence
 {
-    public class BrewdudeIdentityContextFactory : DesignTimeDbContextFactoryBase<BrewdudeIdentityContext>
+    public class BrewdudeIdentityContextFactory : DesignTimeDbContextFactoryBase<BrewdudeDbIdentityContext>
     {
-        protected override BrewdudeIdentityContext CreateNewInstance(DbContextOptions<BrewdudeIdentityContext> options)
+        protected override BrewdudeDbIdentityContext CreateNewInstance(DbContextOptions<BrewdudeDbIdentityContext> options)
         {
-            return new BrewdudeIdentityContext(options);
+            return new BrewdudeDbIdentityContext(options);
         }
     }
 }

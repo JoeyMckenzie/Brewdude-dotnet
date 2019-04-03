@@ -1,5 +1,7 @@
 using System.Threading.Tasks;
 using Brewdude.Application.User.Commands.CreateUser;
+using Brewdude.Application.User.Commands.DeleteUser;
+using Brewdude.Application.User.Commands.UpdateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
 using Brewdude.Domain.Api;
@@ -21,27 +23,44 @@ namespace Brewdude.Web.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<BrewdudeApiResponse<UserViewModel>> Register([FromBody] CreateUserCommand createUserCommand)
+        public async Task<ActionResult> Register([FromBody] CreateUserCommand createUserCommand)
         {
             _logger.LogInformation($"Sending request to create user {createUserCommand.Username} with email {createUserCommand.Email}");
-            return await Mediator.Send(createUserCommand);
+            return Ok(await Mediator.Send(createUserCommand));
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<BrewdudeApiResponse<UserViewModel>> Login([FromBody] GetUserByUsernameCommand request)
+        public async Task<ActionResult> Login([FromBody] GetUserByUsernameCommand request)
         {
             _logger.LogInformation($"Processing login attempt for user {request.Username}");
-            return await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password));
+            return Ok(await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password)));
         }
         
         
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult> GetUserById(int id)
+        public async Task<ActionResult> GetUserById(string id)
         {
             _logger.LogInformation($"Retrieving user [{id}]");
             return Ok(await Mediator.Send(new GetUserByIdCommand(id)));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<ActionResult> UpdateUser(string id, [FromBody] UpdateUserCommand updateUserCommand)
+        {
+            _logger.LogInformation($"Updating user with ID {id}");
+            updateUserCommand.UserId = id;
+            return Ok(await Mediator.Send(updateUserCommand));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<ActionResult> DeleteUserById(string id)
+        {
+            _logger.LogInformation($"Deleting user [{id}]");
+            return Ok(await Mediator.Send(new DeleteUserCommand(id)));
         }
     }
 }

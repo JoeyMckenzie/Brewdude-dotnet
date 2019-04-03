@@ -19,4 +19,9 @@
     <ProjectReference Include="..\..\src\Infrastructure\Brewdude.Persistence\Brewdude.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Beers\Commands" />
+    <Folder Include="Beers\Queries\GetBeerById" />
+  </ItemGroup>
+
 </Project>

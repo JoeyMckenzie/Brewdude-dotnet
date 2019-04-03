@@ -1,8 +1,9 @@
+using Brewdude.Domain.Api;
 using MediatR;
 
 namespace Brewdude.Application.Brewery.Commands.DeleteBrewery
 {
-    public class DeleteBreweryCommand : IRequest
+    public class DeleteBreweryCommand : IRequest<BrewdudeApiResponse>
     {
         public DeleteBreweryCommand(int breweryId)
         {
