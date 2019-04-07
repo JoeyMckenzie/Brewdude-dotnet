@@ -16,8 +16,7 @@ namespace Brewdude.Common.Tests.Extensions
             var filePath = Environment.CurrentDirectory + "/Extensions/userLoginStub.json";
             using (var streamReader = new StreamReader(filePath))
             {
-                var rawJsonString = streamReader.ReadToEnd();
-                _validJson = JsonConvert.SerializeObject(rawJsonString);
+                _validJson = streamReader.ReadToEnd();
             }
         }
 

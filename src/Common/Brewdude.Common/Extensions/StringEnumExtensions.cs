@@ -19,30 +19,32 @@ namespace Brewdude.Common.Extensions
         {
             string description = null;
 
-            if (enumeration is Enum)
-            {
-                var type = enumeration.GetType();
-                var values = Enum.GetValues(type);
+            if (!(enumeration is Enum))
+                return null;
 
-                foreach (int value in values)
-                {
-                    if (value == enumeration.ToInt32(CultureInfo.InvariantCulture))
-                    {
-                        var memberInfoArray = type.GetMember(type.GetEnumName(value));
-                        
-                        // Validate the enum in question
-                        if (!IsValidEnum(memberInfoArray)) 
-                            continue;
-                        
-                        
-                        var descriptionAttributes = memberInfoArray[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-                        if (descriptionAttributes.Length <= 0) 
-                            continue;
-                        
-                        description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
-                        break;
-                    }
-                }
+            var type = enumeration.GetType();
+            var values = Enum.GetValues(type);
+
+            foreach (int value in values)
+            {
+                // Match the enum value in question
+                if (value != enumeration.ToInt32(CultureInfo.InvariantCulture))
+                    continue;
+                
+                // Retrieve the enum member information
+                var memberInfoArray = type.GetMember(type.GetEnumName(value));
+                
+                // Validate the enum in question
+                if (!IsValidEnum(memberInfoArray)) 
+                    continue;
+                
+                
+                var descriptionAttributes = memberInfoArray[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
+                if (descriptionAttributes.Length <= 0) 
+                    continue;
+                
+                description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
+                break;
             }
 
             return description;

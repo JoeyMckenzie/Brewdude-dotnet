@@ -18,7 +18,7 @@ namespace Brewdude.Application.Tests.Beers.Queries
         private readonly BrewdudeDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetBeerByIdQueryHandlerTest(QueryTestFixture fixture)
+        public GetBeerByIdQueryHandlerTest(TestFixture fixture)
         {
             _context = fixture.Context;
             _mapper = fixture.Mapper;

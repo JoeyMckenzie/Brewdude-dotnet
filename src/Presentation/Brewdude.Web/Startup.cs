@@ -29,11 +29,13 @@ using Brewdude.Jwt.Services;
 using Brewdude.Persistence;
 using Brewdude.Web.Infrastructure;
 using FluentValidation.AspNetCore;
+using HealthChecks.UI.Client;
 using MediatR;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -184,7 +186,18 @@ namespace Brewdude.Web
                     // Only need to register one validators, as they all stem from the same assembly
                     fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
                 });
+            
+            // Override built in model state validation
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
+            
+            // Add health checks
+            services.AddHealthChecks()
+                .AddSqlServer(Configuration["Brewdude:ConnectionString"]);
+            services.AddHealthChecks()
+                .AddDbContextCheck<BrewdudeDbContext>("BrewdudeDbContextHealthCheck");
+            services.AddHealthChecks()
+                .AddDbContextCheck<BrewdudeDbIdentityContext>("BrewdudeDbIdentityContextHealthCheck");
+            services.AddHealthChecksUI("BrewdudeDb");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -226,12 +239,22 @@ namespace Brewdude.Web
 
             CreateRoles(serviceProvider).Wait();
             
+            // Configure CORS policy
             app.UseCors(o => o
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
+            
+            // Configure health checks
+            app.UseHealthChecks("/health", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+            app.UseHealthChecksUI();
 
+            // Configure the error handling pipeline and Identity authentication
             app.UseErrorHandlingMiddleware();
             app.UseAuthentication();
             app.UseHttpsRedirection();

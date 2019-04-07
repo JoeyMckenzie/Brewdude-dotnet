@@ -21,7 +21,7 @@ namespace Brewdude.Application.Tests.UserBeers.Queries
         private readonly IMapper _mapper;
         private readonly string _userId;
 
-        public GetBeersByUserIdQueryHandlerTest(QueryTestFixture fixture)
+        public GetBeersByUserIdQueryHandlerTest(TestFixture fixture)
         {
             _context = fixture.Context;
             _mapper = fixture.Mapper;

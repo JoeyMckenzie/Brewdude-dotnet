@@ -1,22 +1,25 @@
 using System;
 using AutoMapper;
+using Brewdude.Common;
 using Brewdude.Persistence;
 using Xunit;
 
 namespace Brewdude.Application.Tests.Infrastructure
 {
-    public class QueryTestFixture : IDisposable
+    public class TestFixture : IDisposable
     {
         public BrewdudeDbContext Context { get; }
         public BrewdudeDbIdentityContext IdentityContext { get; }
         public IMapper Mapper { get; }
+        public IDateTime MachineDateTime { get; }
         public string UserId { get; }        
 
-        public QueryTestFixture()
+        public TestFixture()
         {
             Context = BrewdudeDbContextFactory.Create();
             IdentityContext = BrewdudeDbIdentityContextFactory.Create(out string testUserId);
             Mapper = AutoMapperFactory.Create();
+            MachineDateTime = new DateTimeTest();
             UserId = testUserId;
         }
         
@@ -27,8 +30,14 @@ namespace Brewdude.Application.Tests.Infrastructure
         }
     }
 
-    [CollectionDefinition("QueryCollection")]    
-    public class QueryCollection : ICollectionFixture<QueryTestFixture>
+    [CollectionDefinition("QueryCollection")]
+    public class QueryCollection : ICollectionFixture<TestFixture>
     {
     }
+
+    [CollectionDefinition("CommandCollection")]    
+    public class CommandCollection : ICollectionFixture<TestFixture>
+    {
+    }
+    
 }

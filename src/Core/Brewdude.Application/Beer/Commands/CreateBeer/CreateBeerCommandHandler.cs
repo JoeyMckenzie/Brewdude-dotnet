@@ -10,18 +10,21 @@ using Brewdude.Persistence;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Beer.Commands.CreateBeer
 {
     public class CreateBeerCommandHandler : IRequestHandler<CreateBeerCommand, BrewdudeApiResponse>
     {
+        private readonly ILogger<CreateBeerCommandHandler> _logger;
         private readonly BrewdudeDbContext _context;
         private readonly IDateTime _dateTime;
 
-        public CreateBeerCommandHandler(BrewdudeDbContext context, IDateTime dateTime)
+        public CreateBeerCommandHandler(BrewdudeDbContext context, IDateTime dateTime, ILogger<CreateBeerCommandHandler> logger)
         {
             _context = context;
             _dateTime = dateTime;
+            _logger = logger;
         }
 
         public async Task<BrewdudeApiResponse> Handle(CreateBeerCommand request, CancellationToken cancellationToken)
@@ -37,7 +40,8 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
             var existingBrewery = await _context.Breweries.FindAsync(request.BreweryId);
             
             if (existingBrewery == null)
-                throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BreweryNotFound, $"No brewery with ID [{request.BreweryId}] was found");
+                _logger.LogWarning($"No brewery found for beer $[{request.Name}]");
+                // throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BreweryNotFound, $"No brewery with ID [{request.BreweryId}] was found");
             
             var beer = new Domain.Entities.Beer
             {

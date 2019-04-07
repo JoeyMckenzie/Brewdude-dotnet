@@ -6,7 +6,7 @@ namespace Brewdude.Persistence
 {
     public class BrewdudeDbIdentityContext : IdentityDbContext<BrewdudeUser>
     {
-        public BrewdudeDbIdentityContext(DbContextOptions options)
+        public BrewdudeDbIdentityContext(DbContextOptions<BrewdudeDbIdentityContext> options)
             : base(options)
         {
         }

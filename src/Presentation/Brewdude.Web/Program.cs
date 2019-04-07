@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Brewdude.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +40,7 @@ namespace Brewdude.Web
             var host = CreateWebHostBuilder(args).Build();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-            if (!string.IsNullOrWhiteSpace(environment) && environment.Equals("Development"))
+            if (IsDatabaseRerollEnabled(args, environment))
             {
                 // Seed database
                 using (var scope = host.Services.CreateScope())
@@ -52,10 +54,7 @@ namespace Brewdude.Web
                         Console.WriteLine("Initializing database contexts");
                         var timer = new Stopwatch();
                         timer.Start();
-                        if (args != null && args.Length > 0)
-                        {
-                            context.Database.EnsureDeleted();
-                        }
+                        context.Database.EnsureDeleted();
                         context.Database.EnsureCreated();
                         identityContext.Database.Migrate();
                         BrewdudeDbInitializer.Initialize(context, identityContext);
@@ -104,5 +103,18 @@ namespace Brewdude.Web
                     logging.AddDebug();
                 })
                 .UseStartup<Startup>();
+        
+        private static bool IsDatabaseRerollEnabled(string[] args, string environment)
+        {
+            if (!string.IsNullOrWhiteSpace(environment) && environment.Equals("Development"))
+            {
+                if (args.Any(arg => arg == "reroll"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
