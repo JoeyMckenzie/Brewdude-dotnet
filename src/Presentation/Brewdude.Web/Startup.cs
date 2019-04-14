@@ -241,6 +241,7 @@ namespace Brewdude.Web
                 });
             }
 
+            // Seed roles in the database
             CreateRoles(serviceProvider).Wait();
             
             // Configure CORS policy

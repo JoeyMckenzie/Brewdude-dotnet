@@ -47,51 +47,5 @@ namespace Brewdude.Domain.Api
 
         [JsonProperty(Order = 7)]
         public T Result { get; }
-        
-    }
-
-    public class BrewdudeApiError
-    {
-        public BrewdudeApiError(string errorMessage)
-        {
-            ErrorMessage = errorMessage;
-        }
-        
-        public BrewdudeApiError(string errorMessage, string errorCode, string propertyName)
-        {
-            ErrorMessage = errorMessage;
-            ErrorCode = errorCode;
-            PropertyName = propertyName;
-        }
-        
-        public string ErrorCode { get; set; }
-        public string ErrorMessage { get; set; }
-        public string PropertyName { get; set; }
-    }
-
-    public enum BrewdudeResponseMessage
-    {
-        [Description(BrewdudeConstants.SuccessfulRequestMessage)]
-        Success,
-        [Description(BrewdudeConstants.ErrorValidationMessage)]
-        ErrorValidation,
-        [Description(BrewdudeConstants.BadRequestMessage)]
-        BadRequest,
-        [Description(BrewdudeConstants.InvalidModelState)]
-        InvalidModelState,
-        [Description(BrewdudeConstants.BeerNotFoundMessage)]
-        BeerNotFound,
-        [Description(BrewdudeConstants.BreweryNotFoundMessage)]
-        BreweryNotFound,
-        [Description(BrewdudeConstants.UserNotFoundMessage)]
-        UserNotFound,
-        [Description(BrewdudeConstants.InternalServerErrorMessage)]
-        InternalServerError,
-        [Description(BrewdudeConstants.CreatedMessage)]
-        Created,
-        [Description(BrewdudeConstants.DeletedMessage)]
-        Deleted,
-        [Description(BrewdudeConstants.UpdatedMessage)]
-        Updated
     }
 }
