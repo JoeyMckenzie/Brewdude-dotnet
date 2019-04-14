@@ -32,7 +32,7 @@ namespace Brewdude.Application.Beer.Commands.UpdateBeer
             if (beerToUpdate == null)
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BeerNotFound, $"Beer with ID [{request.BeerId}] not found");
 
-            beerToUpdate.Name = request.Name ?? "";
+            beerToUpdate.Name = request.Name;
             beerToUpdate.Description = request.Description;
             beerToUpdate.BeerStyle = request.BeerStyle;
             beerToUpdate.Ibu = request.Ibu;

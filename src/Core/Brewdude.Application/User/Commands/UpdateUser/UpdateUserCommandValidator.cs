@@ -17,12 +17,12 @@ namespace Brewdude.Application.User.Commands.UpdateUser
                 .EmailAddress();
             
             RuleFor(u => u.UpdatedFirstName)
-                .Custom(ValidationHandlers.ValidNameHandler)
+                .Custom(CustomValidationHandlers.ValidNameHandler)
                 .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxNameLength);
             
             RuleFor(u => u.UpdatedLastName)
-                .Custom(ValidationHandlers.ValidNameHandler)
+                .Custom(CustomValidationHandlers.ValidNameHandler)
                 .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxNameLength);
         }

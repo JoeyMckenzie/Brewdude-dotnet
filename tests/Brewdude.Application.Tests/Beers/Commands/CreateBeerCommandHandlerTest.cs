@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Brewdude.Application.Beer.Commands.CreateBeer;
 using Brewdude.Application.Tests.Infrastructure;
 using Brewdude.Common;
-using Brewdude.Domain;
 using Brewdude.Domain.Api;
 using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
@@ -18,8 +17,8 @@ namespace Brewdude.Application.Tests.Beers.Commands
     [Collection("CommandCollection")]
     public class CreateBeerCommandHandlerTest
     {
-        private readonly BrewdudeDbContext _context;
         private readonly IDateTime _dateTime;
+        private readonly BrewdudeDbContext _context;
         private readonly ILogger<CreateBeerCommandHandler> _logger;
 
         public CreateBeerCommandHandlerTest(TestFixture fixture)
@@ -40,6 +39,7 @@ namespace Brewdude.Application.Tests.Beers.Commands
                 Ibu = 110,
                 BeerStyle = BeerStyle.Ipa,
                 Description = "A great IPA",
+                BreweryId = 1
             };
             
             // Act
@@ -51,25 +51,6 @@ namespace Brewdude.Application.Tests.Beers.Commands
             result.StatusCode.ShouldBe(201);
             result.Success.ShouldBeTrue();
             _context.Beers.Single(b => b.Name == "Dog Years IPA").ShouldNotBeNull();
-        }
-        
-        [Fact]
-        public async Task CreateBeerCommand_GivenInvalidCreateCommandWithoutRequiredFields_ThrowsApiException()
-        {
-            // Arrange
-            var createBeerCommand = new CreateBeerCommand
-            {
-                Ibu = 110,
-                BeerStyle = BeerStyle.Ipa,
-                Description = "A great IPA",
-            };
-            
-            // Act
-            var handler = new CreateBeerCommandHandler(_context, _dateTime, _logger);
-
-            // Assert
-            await Should.ThrowAsync<BrewdudeApiException>(async () =>
-                await handler.Handle(createBeerCommand, CancellationToken.None));
         }
     }
 }

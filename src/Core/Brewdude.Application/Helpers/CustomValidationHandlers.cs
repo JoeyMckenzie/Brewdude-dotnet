@@ -5,7 +5,10 @@ using FluentValidation.Validators;
 
 namespace Brewdude.Application.Helpers
 {
-    public static class ValidationHandlers
+    /// <summary>
+    /// Static helper class that houses all custom fluent validations for validation contexts. 
+    /// </summary>
+    public static class CustomValidationHandlers
     {
         public static void ValidNameHandler(string name, CustomContext context)
         {
@@ -23,6 +26,12 @@ namespace Brewdude.Application.Helpers
         {
             if (!Enum.IsDefined(typeof(Role), context.PropertyValue))
                 context.AddFailure("User role is not valid");
+        }
+
+        public static void ValidBeerStyleHandler(BeerStyle beerStyle, CustomContext context)
+        {
+            if (!Enum.IsDefined(typeof(BeerStyle), context.PropertyValue))
+                context.AddFailure($"{context.PropertyValue} is not a valid beer style");
         }
     }
 }

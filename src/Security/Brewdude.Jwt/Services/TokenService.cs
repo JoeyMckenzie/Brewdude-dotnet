@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Brewdude.Application.Security;
+using Brewdude.Common;
 using Brewdude.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 
@@ -52,11 +55,30 @@ namespace Brewdude.Jwt.Services
 
         public string CreateToken(BrewdudeUser user, Role role)
         {
+            // Instantiate scopes to be added to the token
+            var brewdudeScopes = new BrewdudeScopes();
+            HashSet<string> scopes;
+            switch (role)
+            {
+                case Role.SuperUser:
+                    scopes = brewdudeScopes.GetAllScopes().ToHashSet();
+                    break;
+                case Role.Admin:
+                    scopes = brewdudeScopes.GetAdminUserScopes().ToHashSet();
+                    break;
+                case Role.User:
+                    scopes = brewdudeScopes.GetUserScopes().ToHashSet();
+                    break;
+                default:
+                    scopes = brewdudeScopes.GetAllScopes().ToHashSet();
+                    break;
+            }
+            
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(_jwtSecret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = BuildRoleBasedClaims(user, role),
+                Subject = BuildRoleBasedClaims(user, role, scopes),
                 Issuer = "https://localhost:5001", // TODO: Modify once DNS is set
                 Audience = "https://localhost:5001",
                 IssuedAt = DateTime.UtcNow,
@@ -92,27 +114,10 @@ namespace Brewdude.Jwt.Services
             return tokenString;
         }
 
-        private static ClaimsIdentity BuildRoleBasedClaims(BrewdudeUser user, Role role)
+        private static ClaimsIdentity BuildRoleBasedClaims(BrewdudeUser user, Role role, IEnumerable<string> scopes)
         {
-            if (role == Role.Admin)
-            {
-                return new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Id),
-                    new Claim(ClaimTypes.Email, user.Email),
-                    new Claim(ClaimTypes.UserData, user.UserName),
-                    new Claim(ClaimTypes.UserData, user.FirstName),
-                    new Claim(ClaimTypes.UserData, user.LastName),
-                    new Claim(ClaimTypes.Role, role.ToString()),
-                    new Claim("scopes", "read:beer"),
-                    new Claim("scopes", "read:brewery"),
-                    new Claim("scopes", "write:beer"),
-                    new Claim("scopes", "write:brewery"),
-                    new Claim("username", user.UserName)
-                });
-            }
-            
-            return new ClaimsIdentity(new[]
+            var scopeClaims = new HashSet<Claim>();
+            var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.Id),
                 new Claim(ClaimTypes.Email, user.Email),
@@ -120,10 +125,13 @@ namespace Brewdude.Jwt.Services
                 new Claim(ClaimTypes.UserData, user.FirstName),
                 new Claim(ClaimTypes.UserData, user.LastName),
                 new Claim(ClaimTypes.Role, role.ToString()),
-                new Claim("scopes", "read:beer"),
-                new Claim("scopes", "read:brewery"),
-                new Claim("username", user.UserName)
-            });   
+                new Claim("username", user.UserName),
+            };
+
+            foreach (var scope in scopes)
+                scopeClaims.Add(new Claim("scopes", scope));
+            
+            return new ClaimsIdentity(claims.Concat(scopeClaims));
         }
     }
 }

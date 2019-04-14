@@ -1,6 +1,6 @@
 namespace Brewdude.Domain.ViewModels
 {
-    public class BeerViewModel
+    public class BeerViewModel : BaseViewModel
     {
         public int BeerId { get; set; }
         public string Name { get; set; }
@@ -9,6 +9,5 @@ namespace Brewdude.Domain.ViewModels
         public int Ibu { get; set; }
         public double Abv { get; set; }
         public int BreweryId { get; set; }
-        public bool CanEdit { get; set; } = true;
     }
 }

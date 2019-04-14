@@ -1,11 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR.Pipeline;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Infrastructure
 {
-    public class RequestLogger<TRequest> : IRequestPreProcessor<TRequest>
+    public class RequestLogger<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly ILogger _logger;
 
@@ -14,11 +14,12 @@ namespace Brewdude.Application.Infrastructure
             _logger = logger;
         }
 
-        public Task Process(TRequest request, CancellationToken cancellationToken)
+        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             var requestName = typeof(TRequest).Name;
             _logger.LogInformation("Brewdude request: {Name} {@Request}", requestName, request);
-            return Task.CompletedTask;
+
+            return next();
         }
     }
 }

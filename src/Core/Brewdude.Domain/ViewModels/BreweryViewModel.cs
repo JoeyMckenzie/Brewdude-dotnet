@@ -3,7 +3,7 @@ using Brewdude.Domain.Dtos;
 
 namespace Brewdude.Domain.ViewModels
 {
-    public class BreweryViewModel
+    public class BreweryViewModel : BaseViewModel
     {
         public BreweryViewModel()
         {
@@ -13,7 +13,9 @@ namespace Brewdude.Domain.ViewModels
         public int BreweryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string Website { get; set; }
         public AddressDto Address { get; set; }
         public ICollection<BeerViewModel> Beers { get; set; }
+        public int NumberOfBeers => Beers.Count;
     }
 }

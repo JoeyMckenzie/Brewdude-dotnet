@@ -39,6 +39,7 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpPost]
+        [Authorize("WriteBreweryPolicy")]
         public async Task<ActionResult> CreateBrewery([FromBody] CreateBreweryCommand createBreweryCommand)
         {
             _logger.LogInformation($"Creating brewery for request [{createBreweryCommand.Name}]");
@@ -46,6 +47,7 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize("WriteBreweryPolicy")]
         public async Task<ActionResult> UpdateBrewery(int id, [FromBody] UpdateBreweryCommand updateBreweryCommand)
         {
             _logger.LogInformation($"Updating brewery [{id}]");
@@ -54,6 +56,7 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize("WriteBreweryPolicy")]
         public async Task<ActionResult> DeleteBeer(int id)
         {
             _logger.LogInformation($"Deleting brewery [{id}]");

@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
 {
-    public class GetAllBreweriesQuery : IRequest<BrewdudeApiResponse<BreweryViewModelList>>
+    public class GetAllBreweriesQuery : IRequest<BrewdudeApiResponse<BreweryListViewModel>>
     {
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Brewdude.Domain.Entities.IterableEntities
 {
@@ -10,5 +11,6 @@ namespace Brewdude.Domain.Entities.IterableEntities
         }
         
         public IEnumerable<T> Results { get; set; }
+        public int Count => Results.Count();
     }
 }

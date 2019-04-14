@@ -16,19 +16,19 @@ namespace Brewdude.Application.User.Commands.CreateUser
             RuleFor(u => u.FirstName)
                 .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
-                .Custom(ValidationHandlers.ValidNameHandler);
+                .Custom(CustomValidationHandlers.ValidNameHandler);
             
             RuleFor(u => u.LastName)
                 .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
-                .Custom(ValidationHandlers.ValidNameHandler);
+                .Custom(CustomValidationHandlers.ValidNameHandler);
             
             RuleFor(u => u.Password)
-                .Custom(ValidationHandlers.ValidPasswordHandler)
+                .Custom(CustomValidationHandlers.ValidPasswordHandler)
                 .NotEmpty();
             
             RuleFor(u => u.Role)
-                .Custom(ValidationHandlers.ValidRoleHandler)
+                .Custom(CustomValidationHandlers.ValidRoleHandler)
                 .NotEmpty();
         }
     }

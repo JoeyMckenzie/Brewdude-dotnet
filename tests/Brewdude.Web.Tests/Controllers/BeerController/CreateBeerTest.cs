@@ -8,11 +8,12 @@ using Xunit;
 
 namespace Brewdude.Web.Tests.Controllers.BeerController
 {
-    public class CreateBeer : IClassFixture<BrewdudeWebApplicationFactory<Startup>>
+    public class CreateBeerTest : IClassFixture<BrewdudeWebApplicationFactory<Startup>>
     {
         private readonly HttpClient _httpClient;
+        private const string Server = "https://localhost:5001";
 
-        public CreateBeer(BrewdudeWebApplicationFactory<Startup> factory)
+        public CreateBeerTest(BrewdudeWebApplicationFactory<Startup> factory)
         {
             _httpClient = factory.CreateClient();
         }
@@ -30,7 +31,7 @@ namespace Brewdude.Web.Tests.Controllers.BeerController
             };
 
             var content = Utilities.GetRequestContent(command);
-            var response = await _httpClient.PostAsync($"/api/beer", content);
+            var response = await _httpClient.PostAsync($"{Server}/api/beer", content);
             response.EnsureSuccessStatusCode();
             var beerId = await Utilities.GetResponseContent<int>(response);
 

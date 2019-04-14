@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using SQLitePCL;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Brewdude.Web
@@ -48,7 +49,6 @@ namespace Brewdude.Web
                     try
                     {
                         var context = scope.ServiceProvider.GetService<BrewdudeDbContext>();
-                        var identityContext = scope.ServiceProvider.GetService<BrewdudeDbIdentityContext>();
 
                         // Drop the tables to recreate them with fresh data every server re-roll
                         Console.WriteLine("Initializing database contexts");
@@ -56,8 +56,7 @@ namespace Brewdude.Web
                         timer.Start();
                         context.Database.EnsureDeleted();
                         context.Database.EnsureCreated();
-                        identityContext.Database.Migrate();
-                        BrewdudeDbInitializer.Initialize(context, identityContext);
+                        BrewdudeDbInitializer.Initialize(context);
                         timer.Stop();
                         Console.WriteLine($"Seeding databases, time to initialize {timer.ElapsedMilliseconds} ms");
                     }

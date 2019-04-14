@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Brewdude.Application.Exceptions;
 using Brewdude.Common.Extensions;
 using Brewdude.Domain;
 using Brewdude.Domain.Api;
@@ -13,9 +12,9 @@ using Brewdude.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brewdude.Application.UserBeers.GetBeersByUserId
+namespace Brewdude.Application.UserBeers.Queries.GetBeersByUserId
 {
-    public class GetBeersByUserIdQueryHandler : IRequestHandler<GetBeersByUserIdQuery, BrewdudeApiResponse<UserBeersViewModel>>
+    public class GetBeersByUserIdQueryHandler : IRequestHandler<GetBeersByUserIdQuery, BrewdudeApiResponse<UserBeerListViewModel>>
     {
         private readonly BrewdudeDbContext _context;
         private readonly IMapper _mapper;
@@ -26,7 +25,7 @@ namespace Brewdude.Application.UserBeers.GetBeersByUserId
             _mapper = mapper;
         }
 
-        public async Task<BrewdudeApiResponse<UserBeersViewModel>> Handle(GetBeersByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<UserBeerListViewModel>> Handle(GetBeersByUserIdQuery request, CancellationToken cancellationToken)
         {
             var userBeers = await (
                 from b in _context.Beers
@@ -39,18 +38,17 @@ namespace Brewdude.Application.UserBeers.GetBeersByUserId
             if (userBeers == null || userBeers.Count == 0)
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BeerNotFound, $"Could not find beers for user [{request.UserId}]");
 
-            var userBeersViewModel = new UserBeersViewModel
+            var userBeerListViewModel = new UserBeerListViewModel
             {
-                UserBeers = _mapper.Map<IEnumerable<UserBeerDto>>(userBeers),
+                Results = _mapper.Map<IEnumerable<BeerViewModel>>(userBeers),
                 UserId = request.UserId,
-                CanEdit = true
             };
             
-            return new BrewdudeApiResponse<UserBeersViewModel>(
+            return new BrewdudeApiResponse<UserBeerListViewModel>(
                 (int)HttpStatusCode.OK,
                 BrewdudeResponseMessage.Success.GetDescription(),
-                userBeersViewModel,
-                userBeersViewModel.Count);
+                userBeerListViewModel,
+                userBeerListViewModel.Count);
         }
     }
 }

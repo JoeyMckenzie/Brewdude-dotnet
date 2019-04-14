@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
 {
-    public class GetAllBreweriesQueryHandler : IRequestHandler<GetAllBreweriesQuery, BrewdudeApiResponse<BreweryViewModelList>>
+    public class GetAllBreweriesQueryHandler : IRequestHandler<GetAllBreweriesQuery, BrewdudeApiResponse<BreweryListViewModel>>
     {
         private readonly ILogger<GetAllBreweriesQueryHandler> _logger;
         private readonly BrewdudeDbContext _context;
@@ -28,24 +28,24 @@ namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
             _logger = logger;
         }
 
-        public async Task<BrewdudeApiResponse<BreweryViewModelList>> Handle(GetAllBreweriesQuery request, CancellationToken cancellationToken)
+        public async Task<BrewdudeApiResponse<BreweryListViewModel>> Handle(GetAllBreweriesQuery request, CancellationToken cancellationToken)
         {
             var breweries = await _context.Breweries
                 .Include(b => b.Beers)
                 .Include(b => b.Address)
                 .OrderBy(b => b.Name)
                 .ToListAsync(cancellationToken);
-
-            var viewModel = new BreweryViewModelList
+            
+            var viewModel = new BreweryListViewModel
             {
                 Breweries = _mapper.Map<IEnumerable<BreweryViewModel>>(breweries),
             };
 
-            return new BrewdudeApiResponse<BreweryViewModelList>(
+            return new BrewdudeApiResponse<BreweryListViewModel>(
                 (int)HttpStatusCode.OK, 
                 BrewdudeResponseMessage.Success.GetDescription(), 
                 viewModel,
-                viewModel.Breweries.Count());
+                viewModel.Count);
         }
     }
 }

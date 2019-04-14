@@ -40,8 +40,7 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
             var existingBrewery = await _context.Breweries.FindAsync(request.BreweryId);
             
             if (existingBrewery == null)
-                _logger.LogWarning($"No brewery found for beer $[{request.Name}]");
-                // throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BreweryNotFound, $"No brewery with ID [{request.BreweryId}] was found");
+                throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BreweryNotFound, $"No brewery with ID [{request.BreweryId}] was found");
             
             var beer = new Domain.Entities.Beer
             {

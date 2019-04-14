@@ -33,14 +33,14 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
     
             var viewModel = new BeerListViewModel
             {
-                Beers = _mapper.Map<IEnumerable<BeerDto>>(beers)
+                Results = _mapper.Map<IEnumerable<BeerDto>>(beers)
             };
 
             return new BrewdudeApiResponse<BeerListViewModel>(
                 (int)HttpStatusCode.OK, 
                 BrewdudeResponseMessage.Success.GetDescription(), 
                 viewModel,
-                viewModel.Beers.Count());
+                viewModel.Count);
         }
     }
 }

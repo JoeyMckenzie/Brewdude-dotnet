@@ -11,14 +11,14 @@ namespace Brewdude.Persistence
     {
         private const string UserName = "joey.mckenzie";
         
-        public static void Initialize(BrewdudeDbContext context, BrewdudeDbIdentityContext identityContext)
+        public static void Initialize(BrewdudeDbContext context)
         {
-            SeedEntities(context, identityContext);
+            SeedEntities(context);
         }
 
-        private static void SeedEntities(BrewdudeDbContext context, BrewdudeDbIdentityContext identityContext)
+        private static void SeedEntities(BrewdudeDbContext context)
         {
-            SeedUsers(identityContext, out string userId);
+            SeedUsers(context, out string userId);
             SeedBreweries(context);
             UpdateBreweryAddressesWithBreweryId(context);
             SeedBeers(context);
@@ -26,17 +26,17 @@ namespace Brewdude.Persistence
             SeedUserBreweries(context, userId);
         }
 
-        private static void SeedUsers(BrewdudeDbIdentityContext identityContext, out string userId)
+        private static void SeedUsers(BrewdudeDbContext context, out string userId)
         {
             var brewdudeUser = new BrewdudeUser
             {
                 UserName = UserName
             };
+            
+            context.Users.Add(brewdudeUser);
+            context.SaveChangesAsync();
 
-            identityContext.Users.Add(brewdudeUser);
-            identityContext.SaveChangesAsync();
-
-            userId = identityContext.Users.
+            userId = context.Users.
                 SingleOrDefault(u => string.Equals(u.UserName, UserName, StringComparison.CurrentCultureIgnoreCase))
                 ?.Id;
         }
@@ -168,8 +168,8 @@ namespace Brewdude.Persistence
         {
             var userBeers = new[]
             {
-                new UserBeers { UserId = userId, BeerId = 1 },
-                new UserBeers { UserId = userId, BeerId = 3 }
+                new UserBeer { UserId = userId, BeerId = 1 },
+                new UserBeer { UserId = userId, BeerId = 3 }
             };
             
             context.UserBeers.AddRange(userBeers);
@@ -180,9 +180,9 @@ namespace Brewdude.Persistence
         {
             var userBreweries = new[]
             {
-                new UserBreweries { UserId = userId, BreweryId = 2 },
-                new UserBreweries { UserId = userId, BreweryId = 3 },
-                new UserBreweries { UserId = userId, BreweryId = 1 }
+                new UserBrewery { UserId = userId, BreweryId = 2 },
+                new UserBrewery { UserId = userId, BreweryId = 3 },
+                new UserBrewery { UserId = userId, BreweryId = 1 }
             };
             
             context.UserBreweries.AddRange(userBreweries);

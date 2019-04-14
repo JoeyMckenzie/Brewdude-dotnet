@@ -28,12 +28,6 @@ namespace Brewdude.Web.Tests.Common
                     options.UseInternalServiceProvider(serviceProvider);
                 });
 
-                services.AddDbContext<BrewdudeDbIdentityContext>(options =>
-                {
-                    options.UseInMemoryDatabase("BrewdudeWebTestDatabase");
-                    options.UseInternalServiceProvider(serviceProvider);
-                });
-
                 var serviceProviders = services.BuildServiceProvider();
                 
                 // Create a scope to obtain a reference to the database
@@ -41,18 +35,16 @@ namespace Brewdude.Web.Tests.Common
                 {
                     var scopedServices = scope.ServiceProvider;
                     var brewdudeContext = scopedServices.GetRequiredService<BrewdudeDbContext>();
-                    var identityContext = scopedServices.GetRequiredService<BrewdudeDbIdentityContext>();
                     var logger = scopedServices
                         .GetRequiredService<ILogger<BrewdudeWebApplicationFactory<TStartup>>>();
 
                     // Ensure the database is created.
                     brewdudeContext.Database.EnsureCreated();
-                    identityContext.Database.EnsureCreated();
 
                     try
                     {
                         // Seed the database with test data.
-                        Utilities.InitializeDbContexts(brewdudeContext, identityContext);
+                        Utilities.InitializeDbContexts(brewdudeContext);
                     }
                     catch (Exception exception)
                     {

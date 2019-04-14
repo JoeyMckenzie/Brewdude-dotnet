@@ -54,7 +54,7 @@ namespace Brewdude.Application.User.Commands.CreateUser
             
             // Add user password and role
             await _userManager.AddPasswordAsync(brewdudeUser, request.Password);
-            await _userManager.AddToRoleAsync(brewdudeUser, Role.User.ToString());
+            await _userManager.AddToRoleAsync(brewdudeUser, request.Role.ToString());
 
             // Generate a token for immediate use
             var token = _tokenService.CreateToken(brewdudeUser, Role.User);

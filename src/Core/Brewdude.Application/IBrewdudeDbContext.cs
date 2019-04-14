@@ -8,7 +8,7 @@ namespace Brewdude.Application
         DbSet<Address> Addresses { get; set; }
         DbSet<Domain.Entities.Beer> Beers { get; set; }
         DbSet<Domain.Entities.Brewery> Breweries { get; set; }
-        DbSet<Domain.Entities.UserBeers> UserBeers { get; set; }
-        DbSet<Domain.Entities.UserBreweries> UserBreweries { get; set; }
+        DbSet<Domain.Entities.UserBeer> UserBeers { get; set; }
+        DbSet<Domain.Entities.UserBrewery> UserBreweries { get; set; }
     }
 }

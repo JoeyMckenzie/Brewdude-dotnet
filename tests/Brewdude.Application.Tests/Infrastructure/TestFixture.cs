@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Common;
 using Brewdude.Persistence;
@@ -9,7 +10,6 @@ namespace Brewdude.Application.Tests.Infrastructure
     public class TestFixture : IDisposable
     {
         public BrewdudeDbContext Context { get; }
-        public BrewdudeDbIdentityContext IdentityContext { get; }
         public IMapper Mapper { get; }
         public IDateTime MachineDateTime { get; }
         public string UserId { get; }        
@@ -17,16 +17,14 @@ namespace Brewdude.Application.Tests.Infrastructure
         public TestFixture()
         {
             Context = BrewdudeDbContextFactory.Create();
-            IdentityContext = BrewdudeDbIdentityContextFactory.Create(out string testUserId);
             Mapper = AutoMapperFactory.Create();
             MachineDateTime = new DateTimeTest();
-            UserId = testUserId;
+            UserId = BrewdudeDbContextFactory.UserId;
         }
         
         public void Dispose()
         {
             BrewdudeDbContextFactory.Destroy(Context);
-            BrewdudeDbIdentityContextFactory.Destroy(IdentityContext);
         }
     }
 

@@ -1,9 +1,10 @@
+using Brewdude.Domain.Api;
 using Brewdude.Domain.ViewModels;
 using MediatR;
 
-namespace Brewdude.Application.UserBreweries.GetBreweriesByUserId
+namespace Brewdude.Application.UserBreweries.Queries.GetBreweriesByUserId
 {
-    public class GetBreweriesByUserIdQuery : IRequest<UserBreweriesViewModel>
+    public class GetBreweriesByUserIdQuery : IRequest<BrewdudeApiResponse<UserBreweryListViewModel>>
     {
         public GetBreweriesByUserIdQuery(string userId)
         {

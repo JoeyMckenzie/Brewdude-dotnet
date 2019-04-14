@@ -25,7 +25,7 @@ namespace Brewdude.Application.Tests.Beers.Queries
         }
 
         [Fact]
-        public async Task GetBeerById_GivenExistingBeerId_RetrievesCorrectBeer()
+        public async Task GetBeerById_GivenExistingBeer_RetrievesCorrectBeer()
         {
             // Arrange
             var handler = new GetBeerByIdQueryHandler(_context, _mapper);
@@ -36,8 +36,8 @@ namespace Brewdude.Application.Tests.Beers.Queries
 
             // Assert
             result.ShouldBeOfType<BrewdudeApiResponse<BeerViewModel>>();
-            result.Result.ShouldBeOfType<BeerViewModel>();
             result.Length.ShouldBe(1);
+            result.Result.ShouldBeOfType<BeerViewModel>();
             result.Result.Name.ShouldBe("Hexagenia");
         }
 
@@ -48,7 +48,7 @@ namespace Brewdude.Application.Tests.Beers.Queries
             var handler = new GetBeerByIdQueryHandler(_context, _mapper);
             
             // Act/Assert
-            await Should.ThrowAsync<BrewdudeApiException>(async () =>
+            await Should.ThrowAsync<BrewdudeApiException>(async() => 
                 await handler.Handle(new GetBeerByIdQuery(24), CancellationToken.None));
         }
     }

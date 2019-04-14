@@ -6,6 +6,6 @@ namespace Brewdude.Domain.Entities
     {
         User = 1,
         Admin,
-        SuperUSer
+        SuperUser
     }
 }

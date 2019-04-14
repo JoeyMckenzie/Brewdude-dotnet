@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Brewdude.Application.Beer.Commands.UpdateBeer;
 using Brewdude.Application.Tests.Infrastructure;
+using Brewdude.Domain;
 using Brewdude.Domain.Api;
 using Brewdude.Domain.Entities;
 using Brewdude.Persistence;
@@ -29,7 +30,7 @@ namespace Brewdude.Application.Tests.Beers.Commands
         public async Task UpdateBeerCommand_GivenValidRequestForExistingBeer_UpdatesBeerAndReturnsOkResponse()
         {
             // Arrange
-            var existingBeer = _context.Beers.Single(b => b.Name == "Hexagenia");
+            var existingBeer = _context.Beers.FirstOrDefault(b => b.Name == "Hexagenia");
             var existingIbu = existingBeer.Ibu;
             var existingAbv = existingBeer.Abv;
             var existingDescription = existingBeer.Description;
@@ -50,7 +51,7 @@ namespace Brewdude.Application.Tests.Beers.Commands
             var result = await handler.Handle(updatedValues, CancellationToken.None);
 
             // Assert
-            var updatedBeer = _context.Beers.Find(existingBeer.BeerId);
+            var updatedBeer = await _context.Beers.FindAsync(existingBeer.BeerId);
             result.ShouldNotBeNull();
             result.ShouldBeOfType<BrewdudeApiResponse>();
             result.StatusCode.ShouldBe(200);
@@ -64,7 +65,17 @@ namespace Brewdude.Application.Tests.Beers.Commands
             updatedBeer.BreweryId.ShouldBe(existingBreweryId);
             updatedBeer.Name.ShouldBe(existingName);
             updatedBeer.BeerStyle.ShouldBe(existingBeerStyle);
+        }
+
+        [Fact]
+        public async Task UpdateBeerCommand_GivenNonExistingBeerId_ShouldThrowException()
+        {
+            // Arrange
+            var handler = new UpdateBeerCommandHandler(_context, _logger);
             
+            // Act/Assert
+            await Should.ThrowAsync<BrewdudeApiException>(async () =>
+                await handler.Handle(new UpdateBeerCommand(1337), CancellationToken.None));
         }
     }
 }

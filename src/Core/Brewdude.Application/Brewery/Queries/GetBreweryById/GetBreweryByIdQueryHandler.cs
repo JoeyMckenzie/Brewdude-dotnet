@@ -33,6 +33,7 @@ namespace Brewdude.Application.Brewery.Queries.GetBreweryById
             
             var brewery = await _context.Breweries
                 .Include(b => b.Beers)
+                .Include(b => b.Address)
                 .SingleOrDefaultAsync(b => b.BreweryId == request.BreweryId, cancellationToken);
             
             if (brewery == null)

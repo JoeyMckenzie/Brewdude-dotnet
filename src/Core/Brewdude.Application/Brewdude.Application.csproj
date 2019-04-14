@@ -17,4 +17,9 @@
     <ProjectReference Include="..\Brewdude.Domain\Brewdude.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserBeers\Queries" />
+    <Folder Include="UserBreweries\Queries" />
+  </ItemGroup>
+
 </Project>

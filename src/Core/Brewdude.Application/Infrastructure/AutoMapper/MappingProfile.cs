@@ -1,4 +1,6 @@
 using AutoMapper;
+using Brewdude.Application.UserBeers.Commands.CreateUserBeer;
+using Brewdude.Application.UserBreweries.Commands;
 using Brewdude.Domain.Dtos;
 using Brewdude.Domain.Entities;
 using Brewdude.Domain.ViewModels;
@@ -17,7 +19,7 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
             CreateMap<BrewdudeUser, UserViewModel>()
                 .ForMember(u => u.Id, m => m.MapFrom(b => b.Id));
             CreateMap<UserViewModel, BrewdudeUser>();
-            
+
             CreateMap<Domain.Entities.Brewery, BreweryViewModel>();
             
             
@@ -41,6 +43,11 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
             
             CreateMap<Domain.Entities.Brewery, UserBreweryDto>();
             
+            
+            // MediatR Requests
+            CreateMap<CreateUserBeerCommand, UserBeer>();
+            
+            CreateMap<CreateUserBreweryCommand, UserBrewery>();
         }
     }
 }

@@ -21,10 +21,13 @@ using Brewdude.Application.Security;
 using Brewdude.Application.User.Commands.CreateUser;
 using Brewdude.Application.User.Queries.GetUserById;
 using Brewdude.Application.User.Queries.GetUserByUsername;
-using Brewdude.Application.UserBeers.GetBeersByUserId;
+using Brewdude.Application.UserBeers.Commands.CreateUserBeer;
+using Brewdude.Application.UserBeers.Queries.GetBeersByUserId;
+using Brewdude.Application.UserBreweries.Commands;
 using Brewdude.Common;
 using Brewdude.Domain.Entities;
 using Brewdude.Infrastructure;
+using Brewdude.Jwt;
 using Brewdude.Jwt.Services;
 using Brewdude.Persistence;
 using Brewdude.Web.Infrastructure;
@@ -84,7 +87,9 @@ namespace Brewdude.Web
                 typeof(UpdateBreweryCommandHandler).GetTypeInfo().Assembly,
                 typeof(DeleteBreweryCommandHandler).GetTypeInfo().Assembly,
                 typeof(GetUserByIdCommandHandler).GetTypeInfo().Assembly,
-                typeof(GetUserByUsernameCommandHandler).GetTypeInfo().Assembly
+                typeof(GetUserByUsernameCommandHandler).GetTypeInfo().Assembly,
+                typeof(CreateUserBeerCommandHandler).GetTypeInfo().Assembly,
+                typeof(CreateUserBreweryCommandHandler).GetTypeInfo().Assembly
             };
 
             // Add services
@@ -101,16 +106,14 @@ namespace Brewdude.Web
             services.AddDbContext<BrewdudeDbContext>(options =>
                 options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
 
-            services.AddDbContext<BrewdudeDbIdentityContext>(options =>
-                options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
-
             // Add Identity
             services.AddDefaultIdentity<BrewdudeUser>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<BrewdudeDbIdentityContext>()
+                .AddEntityFrameworkStores<BrewdudeDbContext>()
                 .AddDefaultTokenProviders();
             
             // Add MediatR
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestLogger<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehavior<,>));
@@ -128,22 +131,20 @@ namespace Brewdude.Web
                 {
                     OnTokenValidated = context =>
                     {
-                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbIdentityContext>();
-                        var userIdParsedSuccessfully = int.TryParse(context.Principal.Identity.Name, out var userId);
-                        if (!userIdParsedSuccessfully)
+                        var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbContext>();
+                        var userId = context.Principal?.Identity?.Name;
+                        
+                        // No userId found on token
+                        if (userId == null)
+                            return Task.CompletedTask;
+                        
+                        var user = userContext.Users.Find(userId);
+                        if (user == null)
                         {
-                            _logger.LogWarning($"User ID was not parsed successfully for user {context.Principal.Identity.Name}");
-                        }
-                        else
-                        {
-                            var user = userContext.Users.Find(userId);
-                            if (user == null)
-                            {
-                                // return unauthorized if user no longer exists
-                                _logger.LogError($"User with userId [{userId}] no longer exists");
-                                context.Fail("Unauthorized");
-                            }  
-                        }
+                            // Return unauthorized if user no longer exists
+                            _logger.LogError($"User with userId [{userId}] no longer exists");
+                            context.Fail("Unauthorized");
+                        }  
                         return Task.CompletedTask;
                     }
                 };
@@ -151,7 +152,6 @@ namespace Brewdude.Web
                 jwtBearerOptions.SaveToken = true;
                 jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
                 {
-                    
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(jwtSigningSecret),
                     ValidateIssuer = false,
@@ -161,19 +161,25 @@ namespace Brewdude.Web
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy("WriteBreweryPolicy", policyBuilder =>
+                    policyBuilder.RequireClaim("scopes", new BrewdudeScopes().WriteBrewery));
+                
+                options.AddPolicy("WriteBeerPolicy", policyBuilder =>
+                    policyBuilder.RequireClaim("scopes", new BrewdudeScopes().WriteBeer));
+                
                 options.AddPolicy("BrewdudeUserPolicy", policyBuilder =>
                 {
                     policyBuilder.RequireAuthenticatedUser();
                     policyBuilder.RequireRole("User", "Admin");
                     policyBuilder.RequireClaim("username");
-                    policyBuilder.RequireClaim("scopes", "read:brewery", "read:brewery");
+                    policyBuilder.RequireClaim("scopes", new BrewdudeScopes().GetUserScopes());
                 });
                 options.AddPolicy("BrewdudeAdminPolicy", policyBuilder =>
                 {
                     policyBuilder.RequireAuthenticatedUser();
                     policyBuilder.RequireRole("Admin");
                     policyBuilder.RequireClaim("username");
-                    policyBuilder.RequireClaim("scopes", "read:brewery", "read:brewery", "write:beer", "write:brewery");
+                    policyBuilder.RequireClaim("scopes", new BrewdudeScopes().GetAdminUserScopes());
                 });
             });
 
@@ -195,9 +201,7 @@ namespace Brewdude.Web
                 .AddSqlServer(Configuration["Brewdude:ConnectionString"]);
             services.AddHealthChecks()
                 .AddDbContextCheck<BrewdudeDbContext>("BrewdudeDbContextHealthCheck");
-            services.AddHealthChecks()
-                .AddDbContextCheck<BrewdudeDbIdentityContext>("BrewdudeDbIdentityContextHealthCheck");
-            services.AddHealthChecksUI("BrewdudeDb");
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

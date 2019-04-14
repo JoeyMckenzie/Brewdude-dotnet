@@ -1,6 +1,6 @@
 namespace Brewdude.Domain.ViewModels
 {
-    public class AddressViewModel
+    public class AddressViewModel : BaseViewModel
     {
         
     }
