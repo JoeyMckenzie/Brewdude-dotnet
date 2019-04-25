@@ -1,11 +1,10 @@
-using System.Linq;
-using System.Net;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Microsoft.AspNetCore.Mvc.Filters;
-
 namespace Brewdude.Middleware.Filters
 {
+    using System.Linq;
+    using System.Net;
+    using Domain.Api;
+    using Microsoft.AspNetCore.Mvc.Filters;
+
     public class ModelStateValidationActionFilterAttribute : ActionFilterAttribute
     {
         /// <inheritdoc />
@@ -23,7 +22,7 @@ namespace Brewdude.Middleware.Filters
             {
                 // Retrieve all model state errors
                 var modelErrors = modelState.Keys.SelectMany(key => modelState[key].Errors);
-                
+
                 // Build a list of BrewdudeApiErrors to return to the request pipeline
                 var brewdudeApiErrors = modelErrors.Select(modelError => new BrewdudeApiError(modelError.ErrorMessage)).ToList();
 
@@ -39,7 +38,7 @@ namespace Brewdude.Middleware.Filters
                 // Throw the API exception to be caught during the pipeline
                 throw brewdudeApiException;
             }
-            
+
             base.OnActionExecuting(context);
         }
     }

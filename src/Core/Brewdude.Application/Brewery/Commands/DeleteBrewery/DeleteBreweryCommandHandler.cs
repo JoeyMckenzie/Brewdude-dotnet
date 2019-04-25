@@ -1,15 +1,14 @@
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Persistence;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Application.Brewery.Commands.DeleteBrewery
 {
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Common.Extensions;
+    using Domain.Api;
+    using MediatR;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+
     public class DeleteBreweryCommandHandler : IRequestHandler<DeleteBreweryCommand, BrewdudeApiResponse>
     {
         private readonly ILogger<DeleteBreweryCommandHandler> _logger;
@@ -26,7 +25,9 @@ namespace Brewdude.Application.Brewery.Commands.DeleteBrewery
             var brewery = await _context.Breweries.FindAsync(request.BreweryId);
 
             if (brewery == null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BreweryNotFound, $"Brewery [{request.BreweryId}] not found");
+            }
 
             _context.Breweries.Remove(brewery);
             await _context.SaveChangesAsync(cancellationToken);

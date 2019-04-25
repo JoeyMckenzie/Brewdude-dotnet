@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using Brewdude.Application.Security;
-using Brewdude.Common;
-using Brewdude.Domain.Entities;
-using Microsoft.IdentityModel.Tokens;
-
 namespace Brewdude.Jwt.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Text;
+    using Application.Security;
+    using Domain.Entities;
+    using Microsoft.IdentityModel.Tokens;
+
     public class TokenService : ITokenService
     {
-        private readonly string _jwtSecret;
         private const string Email = "email";
+        private readonly string _jwtSecret;
 
         public TokenService(string jwtSecret)
         {
@@ -27,7 +26,7 @@ namespace Brewdude.Jwt.Services
         /// <param name="token">Generated token from register/login</param>
         /// <param name="user">BrewdudeUser entity</param>
         /// <returns>True if email is found and matches between user entity and token claim</returns>
-        public bool ValidateUserEmail(string token, BrewdudeUser user)
+        public static bool ValidateUserEmail(string token, BrewdudeUser user)
         {
             var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
@@ -38,9 +37,7 @@ namespace Brewdude.Jwt.Services
                 {
                     if (claim.Type == Email)
                     {
-                        if (!string.IsNullOrWhiteSpace(claim.Value) && 
-                                string.Equals(claim.Value, user.Email,
-                                    StringComparison.CurrentCultureIgnoreCase))
+                        if (!string.IsNullOrWhiteSpace(claim.Value) && string.Equals(claim.Value, user.Email, StringComparison.CurrentCultureIgnoreCase))
                         {
                             return true;
                         }
@@ -73,7 +70,7 @@ namespace Brewdude.Jwt.Services
                     scopes = brewdudeScopes.GetAllScopes().ToHashSet();
                     break;
             }
-            
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(_jwtSecret);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -129,8 +126,10 @@ namespace Brewdude.Jwt.Services
             };
 
             foreach (var scope in scopes)
+            {
                 scopeClaims.Add(new Claim("scopes", scope));
-            
+            }
+
             return new ClaimsIdentity(claims.Concat(scopeClaims));
         }
     }

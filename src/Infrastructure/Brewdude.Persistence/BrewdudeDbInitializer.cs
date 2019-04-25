@@ -1,16 +1,13 @@
-using System;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using Brewdude.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
-
 namespace Brewdude.Persistence
 {
+    using System;
+    using System.Linq;
+    using Domain.Entities;
+
     public static class BrewdudeDbInitializer
     {
         private const string UserName = "joey.mckenzie";
-        
+
         public static void Initialize(BrewdudeDbContext context)
         {
             SeedEntities(context);
@@ -32,7 +29,7 @@ namespace Brewdude.Persistence
             {
                 UserName = UserName
             };
-            
+
             context.Users.Add(brewdudeUser);
             context.SaveChangesAsync();
 
@@ -90,7 +87,7 @@ namespace Brewdude.Persistence
                 UpdatedAt = DateTime.UtcNow,
                 BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Sudwerk Brewing Company").BreweryId
             });
-            
+
             context.SaveChanges();
         }
 
@@ -144,7 +141,7 @@ namespace Brewdude.Persistence
                     }
                 }
             };
-            
+
             context.Breweries.AddRange(breweries);
             context.SaveChanges();
         }
@@ -159,7 +156,7 @@ namespace Brewdude.Persistence
             fallRiverBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Redding").AddressId;
             sierraNevadaBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Chico").AddressId;
             sudwerkBrewingCompany.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Davis").AddressId;
-            
+
             context.Breweries.UpdateRange(breweries);
             context.SaveChanges();
         }
@@ -171,7 +168,7 @@ namespace Brewdude.Persistence
                 new UserBeer { UserId = userId, BeerId = 1 },
                 new UserBeer { UserId = userId, BeerId = 3 }
             };
-            
+
             context.UserBeers.AddRange(userBeers);
             context.SaveChanges();
         }
@@ -184,7 +181,7 @@ namespace Brewdude.Persistence
                 new UserBrewery { UserId = userId, BreweryId = 3 },
                 new UserBrewery { UserId = userId, BreweryId = 1 }
             };
-            
+
             context.UserBreweries.AddRange(userBreweries);
             context.SaveChanges();
         }

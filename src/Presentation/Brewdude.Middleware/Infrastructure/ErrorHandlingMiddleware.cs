@@ -1,19 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Brewdude.Common.Constants;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using FluentValidation;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-
 namespace Brewdude.Middleware.Infrastructure
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Common.Constants;
+    using Common.Extensions;
+    using Domain.Api;
+    using FluentValidation;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _requestDelegate;
@@ -24,12 +23,12 @@ namespace Brewdude.Middleware.Infrastructure
             _requestDelegate = requestDelegate;
             _logger = logger;
         }
-        
+
         /// <summary>
         /// Kicks off he request pipeline while catching any exceptions thrown in the application layer.
         /// </summary>
         /// <param name="context">HTTP context from the request pipeline</param>
-        /// <returns></returns>
+        /// <returns>Handoff to next request delegate in teh pipeline</returns>
         public async Task Invoke(HttpContext context)
         {
             try
@@ -41,7 +40,7 @@ namespace Brewdude.Middleware.Infrastructure
                 await HandleExceptionAsync(context, ex);
             }
         }
-        
+
         /// <summary>
         /// Handles any exception thrown during the pipeline process and in the application layer. Note that model state
         /// validation failures made in the web layer are handled by the ASP.NET Core model state validation failure filter.
@@ -88,7 +87,7 @@ namespace Brewdude.Middleware.Infrastructure
                             PropertyName = validationFailure.PropertyName
                         };
                         _logger.LogInformation("Validation failure to request @{validationFailure}", validationFailure);
-                        validationFailures.Add(brewdudeValidationError);                            
+                        validationFailures.Add(brewdudeValidationError);
                     }
                     break;
                 default:
@@ -98,7 +97,7 @@ namespace Brewdude.Middleware.Infrastructure
                     errors = exception.Message;
                     break;
             }
-            
+
             // Instantiate the response
             context.Response.ContentType = "application/json";
             var response = new BrewdudeApiResponse(statusCode, responseMessage);

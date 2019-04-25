@@ -1,9 +1,10 @@
-using System;
-
 namespace Brewdude.Domain.Entities
 {
     public class Beer : BaseEntity
     {
+        /// <summary>
+        /// Primary key for the beer entity.
+        /// </summary>
         public int BeerId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

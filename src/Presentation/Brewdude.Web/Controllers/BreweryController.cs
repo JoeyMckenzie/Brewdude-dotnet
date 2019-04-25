@@ -1,18 +1,18 @@
-using System.Threading.Tasks;
-using Brewdude.Application.Brewery.Commands.CreateBrewery;
-using Brewdude.Application.Brewery.Commands.DeleteBrewery;
-using Brewdude.Application.Brewery.Commands.UpdateBrewery;
-using Brewdude.Application.Brewery.Queries.GetAllBreweries;
-using Brewdude.Application.Brewery.Queries.GetBreweryById;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain.Api;
-using Brewdude.Middleware.Filters;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Web.Controllers
 {
+    using System.Threading.Tasks;
+    using Application.Brewery.Commands.CreateBrewery;
+    using Application.Brewery.Commands.DeleteBrewery;
+    using Application.Brewery.Commands.UpdateBrewery;
+    using Application.Brewery.Queries.GetAllBreweries;
+    using Application.Brewery.Queries.GetBreweryById;
+    using Common.Extensions;
+    using Domain.Api;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Middleware.Filters;
+
     [Authorize(Policy = "BrewdudeUserPolicy")]
     [ModelStateValidationActionFilter]
     public class BreweryController : BrewdudeControllerBase

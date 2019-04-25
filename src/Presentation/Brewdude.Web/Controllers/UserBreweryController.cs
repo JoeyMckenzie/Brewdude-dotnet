@@ -1,14 +1,14 @@
-using System.Threading.Tasks;
-using Brewdude.Application.UserBreweries.Commands;    
-using Brewdude.Application.UserBreweries.Queries.GetBreweriesByUserId;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain.Api;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Web.Controllers
 {
+    using System.Threading.Tasks;
+    using Application.UserBreweries.Commands.CreateUserBrewery;
+    using Application.UserBreweries.Queries.GetBreweriesByUserId;
+    using Common.Extensions;
+    using Domain.Api;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+
     [Authorize(Policy = "BrewdudeUserPolicy")]
     public class UserBreweryController : BrewdudeControllerBase
     {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Brewdude.Application.Beer.Commands.CreateBeer;
 using Brewdude.Application.Tests.Infrastructure;
 using Brewdude.Common;
+using Brewdude.Common.Utilities;
 using Brewdude.Domain.Api;
 using Brewdude.Domain.Entities;
 using Brewdude.Persistence;

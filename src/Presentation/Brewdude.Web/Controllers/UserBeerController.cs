@@ -1,14 +1,15 @@
-using System.Threading.Tasks;
-using Brewdude.Application.UserBeers.Commands.CreateUserBeer;
-using Brewdude.Application.UserBeers.Queries.GetBeersByUserId;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain.Api;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Web.Controllers
 {
+    using System.Threading.Tasks;
+    using Application.UserBeers.Commands.CreateUserBeer;
+    using Application.UserBeers.Commands.DeleteUserBeer;
+    using Application.UserBeers.Queries.GetBeersByUserId;
+    using Common.Extensions;
+    using Domain.Api;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+
     [Authorize(Policy = "BrewdudeUserPolicy")]
     public class UserBeerController : BrewdudeControllerBase
     {
@@ -31,6 +32,13 @@ namespace Brewdude.Web.Controllers
         {
             _logger.LogInformation($"Creating beer [{command.BeerId}] for user [{command.UserId}]");
             return Created(BrewdudeResponseMessage.Created.GetDescription(), await Mediator.Send(command));
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUserBeer(int id)
+        {
+            _logger.LogInformation($"Deleting beer [{id}] for user [{User.Identity.Name}]");
+            return Ok(await Mediator.Send(new DeleteUserBeerCommand(id, User.Identity.Name)));
         }
     }
 }

@@ -1,9 +1,8 @@
-using Brewdude.Persistence.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Persistence
 {
+    using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
+
     public class BrewdudeDbContextFactory : DesignTimeDbContextFactoryBase<BrewdudeDbContext>
     {
         protected override BrewdudeDbContext CreateNewInstance(DbContextOptions<BrewdudeDbContext> options)

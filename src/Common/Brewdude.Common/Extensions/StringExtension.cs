@@ -1,9 +1,9 @@
-using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace Brewdude.Common.Extensions
 {
+    using System;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+
     public static class StringExtension
     {
         /// <summary>
@@ -46,8 +46,13 @@ namespace Brewdude.Common.Extensions
         /// <returns>True, if valid JSON structure characters are found</returns>
         private static bool ContainsValidJsonStructure(string text)
         {
-            return text.StartsWith("{") && text.EndsWith("}") ||
-                   text.StartsWith("[") && text.EndsWith("]");
+            return (StartsWithValue(text, "{") && StartsWithValue(text, "}")) ||
+                   (StartsWithValue(text, "[") && StartsWithValue(text, "]"));
+        }
+
+        private static bool StartsWithValue(string text, string value)
+        {
+            return text.StartsWith(value, StringComparison.CurrentCulture);
         }
     }
 }

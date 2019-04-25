@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using Brewdude.Common;
+using Brewdude.Common.Utilities;
 using Brewdude.Persistence;
 using Xunit;
 

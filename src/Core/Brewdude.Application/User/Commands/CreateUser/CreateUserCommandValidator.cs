@@ -1,9 +1,9 @@
-using Brewdude.Application.Helpers;
-using Brewdude.Common.Constants;
-using FluentValidation;
-
 namespace Brewdude.Application.User.Commands.CreateUser
 {
+    using Common.Constants;
+    using FluentValidation;
+    using Helpers;
+
     public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     {
         public CreateUserCommandValidator()
@@ -12,24 +12,21 @@ namespace Brewdude.Application.User.Commands.CreateUser
                 .EmailAddress()
                 .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxEmailLength);
-            
+
             RuleFor(u => u.FirstName)
-                .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
-                .Custom(CustomValidationHandlers.ValidNameHandler);
-            
+                .HasValidName();
+
+
             RuleFor(u => u.LastName)
-                .NotEmpty()
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
-                .Custom(CustomValidationHandlers.ValidNameHandler);
-            
+                .HasValidName();
+
             RuleFor(u => u.Password)
-                .Custom(CustomValidationHandlers.ValidPasswordHandler)
-                .NotEmpty();
-            
+                .HasValidPassword();
+
             RuleFor(u => u.Role)
-                .Custom(CustomValidationHandlers.ValidRoleHandler)
-                .NotEmpty();
+                .HasValidUserRole();
         }
     }
 }

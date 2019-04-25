@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-
 namespace Brewdude.Common.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Linq;
+    using System.Reflection;
+
     public static class StringEnumExtensions
     {
         /// <summary>
@@ -15,12 +15,15 @@ namespace Brewdude.Common.Extensions
         /// <param name="enumeration">Enum with description attributes</param>
         /// <typeparam name="T">Generic enum type</typeparam>
         /// <returns>Description as written in the attribute</returns>
-        public static string GetDescription<T>(this T enumeration) where T : IConvertible
+        public static string GetDescription<T>(this T enumeration)
+            where T : IConvertible
         {
             string description = null;
 
             if (!(enumeration is Enum))
+            {
                 return null;
+            }
 
             var type = enumeration.GetType();
             var values = Enum.GetValues(type);
@@ -29,20 +32,26 @@ namespace Brewdude.Common.Extensions
             {
                 // Match the enum value in question
                 if (value != enumeration.ToInt32(CultureInfo.InvariantCulture))
+                {
+                    // Enum value is not castable to an integer, continue to next iteration
                     continue;
-                
+                }
+
                 // Retrieve the enum member information
                 var memberInfoArray = type.GetMember(type.GetEnumName(value));
-                
+
                 // Validate the enum in question
-                if (!IsValidEnum(memberInfoArray)) 
+                if (!IsValidEnum(memberInfoArray))
+                {
                     continue;
-                
-                
+                }
+
                 var descriptionAttributes = memberInfoArray[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
-                if (descriptionAttributes.Length <= 0) 
+                if (descriptionAttributes.Length <= 0)
+                {
                     continue;
-                
+                }
+
                 description = ((DescriptionAttribute)descriptionAttributes[0]).Description;
                 break;
             }

@@ -1,21 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.Entities;
-using Brewdude.Persistence;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Application.UserBeers.Commands.CreateUserBeer
 {
+    using System.Linq;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Common.Extensions;
+    using Domain.Api;
+    using Domain.Entities;
+    using MediatR;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+
     public class CreateUserBeerCommandHandler : IRequestHandler<CreateUserBeerCommand, BrewdudeApiResponse>
     {
         private readonly ILogger<CreateUserBeerCommandHandler> _logger;
@@ -33,17 +30,21 @@ namespace Brewdude.Application.UserBeers.Commands.CreateUserBeer
         {
             // Validate the beer exists from the request
             var existingBeer = await _context.Beers.FindAsync(request.BeerId);
-            
+
             if (existingBeer == null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BeerNotFound, $"Beer with ID [{request.BeerId}] was not added to user ID [{request.UserId}], beer does not exist");
-            
+            }
+
             var existingUserBeers = await _context.UserBeers
                 .Where(ub => ub.UserId == request.UserId)
                 .ToListAsync(cancellationToken);
-            
+
             // Validate the request beer to add does not already exist for the user
             if (existingUserBeers.Exists(ub => ub.BeerId == request.BeerId))
+            {
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, $"User beer [{request.UserId}] already contains beer [{request.BeerId}]");
+            }
 
             // Map to user beer entity and add to context
             var userBeer = _mapper.Map<UserBeer>(request);
@@ -51,7 +52,8 @@ namespace Brewdude.Application.UserBeers.Commands.CreateUserBeer
             await _context.SaveChangesAsync(cancellationToken);
             _logger.LogInformation($"User [{request.UserId}] has added beer [{request.BeerId}] successfully");
 
-            return new BrewdudeApiResponse((int)HttpStatusCode.Created,
+            return new BrewdudeApiResponse(
+                (int)HttpStatusCode.Created,
                 BrewdudeResponseMessage.Created.GetDescription());
         }
     }

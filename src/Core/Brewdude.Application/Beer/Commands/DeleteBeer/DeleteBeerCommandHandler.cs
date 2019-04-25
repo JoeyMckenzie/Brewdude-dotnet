@@ -1,17 +1,13 @@
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Brewdude.Application.Exceptions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Persistence;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Application.Beer.Commands.DeleteBeer
 {
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Domain.Api;
+    using MediatR;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+
     public class DeleteBeerCommandHandler : IRequestHandler<DeleteBeerCommand, BrewdudeApiResponse>
     {
         private readonly BrewdudeDbContext _context;
@@ -26,9 +22,11 @@ namespace Brewdude.Application.Beer.Commands.DeleteBeer
         public async Task<BrewdudeApiResponse> Handle(DeleteBeerCommand request, CancellationToken cancellationToken)
         {
             var beer = await _context.Beers.FindAsync(request.BeerId);
-            
+
             if (beer == null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BeerNotFound, $"Beer with ID [{request.BeerId}] not found");
+            }
 
             _context.Remove(beer);
             await _context.SaveChangesAsync(cancellationToken);

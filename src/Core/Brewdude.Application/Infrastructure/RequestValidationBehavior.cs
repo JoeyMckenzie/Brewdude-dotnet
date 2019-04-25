@@ -1,17 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Brewdude.Application.Exceptions;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain.Api;
-using FluentValidation;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Application.Infrastructure
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using FluentValidation;
+    using MediatR;
+    using Microsoft.Extensions.Logging;
+
     public class RequestValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
@@ -39,7 +35,7 @@ namespace Brewdude.Application.Infrastructure
                 _logger.LogInformation($"Validation failures for request [{request}]");
                 throw new ValidationException(failures);
             }
-            
+
             return next();
         }
     }

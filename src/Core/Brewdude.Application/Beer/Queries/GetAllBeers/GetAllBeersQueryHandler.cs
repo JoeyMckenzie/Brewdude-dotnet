@@ -1,25 +1,26 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.Dtos;
-using Brewdude.Domain.ViewModels;
-using Brewdude.Persistence;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-
 namespace Brewdude.Application.Beer.Queries.GetAllBeers
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Common.Extensions;
+    using Domain.Api;
+    using Domain.Dtos;
+    using Domain.ViewModels;
+    using MediatR;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+
     public class GetAllBeersQueryHandler : IRequestHandler<GetAllBeersQuery, BrewdudeApiResponse<BeerListViewModel>>
     {
         private readonly BrewdudeDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetAllBeersQueryHandler(BrewdudeDbContext context, IMapper mapper)
+        public GetAllBeersQueryHandler(BrewdudeDbContext context, IMapper mapper, ILogger<GetAllBeersQueryHandler> logger)
         {
             _context = context;
             _mapper = mapper;
@@ -30,7 +31,7 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
             var beers = await _context.Beers
                 .OrderBy(b => b.Name)
                 .ToListAsync(cancellationToken);
-    
+
             var viewModel = new BeerListViewModel
             {
                 Results = _mapper.Map<IEnumerable<BeerDto>>(beers)
@@ -38,7 +39,7 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
 
             return new BrewdudeApiResponse<BeerListViewModel>(
                 (int)HttpStatusCode.OK, 
-                BrewdudeResponseMessage.Success.GetDescription(), 
+                BrewdudeResponseMessage.Success.GetDescription(),
                 viewModel,
                 viewModel.Count);
         }

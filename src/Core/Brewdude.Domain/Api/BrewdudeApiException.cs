@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using Brewdude.Domain.Api;
-
-namespace Brewdude.Domain
+namespace Brewdude.Domain.Api
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+
     public class BrewdudeApiException : Exception
     {
         public BrewdudeApiException(HttpStatusCode statusCode, BrewdudeResponseMessage responseMessage, string error)
@@ -16,8 +15,11 @@ namespace Brewdude.Domain
         }
 
         public HttpStatusCode StatusCode { get; set; }
+
         public BrewdudeResponseMessage ResponseMessage { get; set; }
+
         public string Errors { get; set; }
+
         public IEnumerable<BrewdudeApiError> ApiErrors { get; set; }
     }
 }

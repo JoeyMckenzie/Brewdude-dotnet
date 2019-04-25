@@ -1,32 +1,34 @@
-using AutoMapper;
-using Brewdude.Application.UserBeers.Commands.CreateUserBeer;
-using Brewdude.Application.UserBreweries.Commands;
-using Brewdude.Domain.Dtos;
-using Brewdude.Domain.Entities;
-using Brewdude.Domain.ViewModels;
-
 namespace Brewdude.Application.Infrastructure.AutoMapper
 {
+    using Domain.Dtos;
+    using Domain.Entities;
+    using Domain.ViewModels;
+    using global::AutoMapper;
+    using UserBeers.Commands.CreateUserBeer;
+    using UserBreweries.Commands.CreateUserBrewery;
+
+    /// <summary>
+    /// Constructs all the mapping profiles between entities and view models, data transfer objects, and simple MediatR requests.
+    /// </summary>
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
             // View Models
-            CreateMap<Domain.Entities.Beer, BeerViewModel>()
+            CreateMap<Beer, BeerViewModel>()
                 .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
-            CreateMap<BeerViewModel, Domain.Entities.Beer>();
-            
+            CreateMap<BeerViewModel, Beer>();
+
             CreateMap<BrewdudeUser, UserViewModel>()
                 .ForMember(u => u.Id, m => m.MapFrom(b => b.Id));
             CreateMap<UserViewModel, BrewdudeUser>();
 
-            CreateMap<Domain.Entities.Brewery, BreweryViewModel>();
-            
-            
+            CreateMap<Brewery, BreweryViewModel>();
+
             // Dtos
-            CreateMap<Domain.Entities.Beer, BeerDto>()
+            CreateMap<Beer, BeerDto>()
                 .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
-            CreateMap<BeerDto, Domain.Entities.Beer>();
+            CreateMap<BeerDto, Beer>();
 
             CreateMap<Address, AddressDto>()
                 .ForMember(a => a.City, m => m.MapFrom(a => a.City))
@@ -38,15 +40,14 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
                 .ForMember(a => a.State, m => m.MapFrom(a => a.State))
                 .ForMember(a => a.StreetAddress, m => m.MapFrom(a => a.StreetAddress))
                 .ForMember(a => a.ZipCode, m => m.MapFrom(a => a.ZipCode));
-            
-            CreateMap<Domain.Entities.Beer, UserBeerDto>();
-            
-            CreateMap<Domain.Entities.Brewery, UserBreweryDto>();
-            
-            
+
+            CreateMap<Beer, UserBeerDto>();
+
+            CreateMap<Brewery, UserBreweryDto>();
+
             // MediatR Requests
             CreateMap<CreateUserBeerCommand, UserBeer>();
-            
+
             CreateMap<CreateUserBreweryCommand, UserBrewery>();
         }
     }

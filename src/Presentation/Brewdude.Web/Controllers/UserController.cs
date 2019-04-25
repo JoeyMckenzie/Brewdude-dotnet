@@ -1,17 +1,15 @@
-using System.Threading.Tasks;
-using Brewdude.Application.User.Commands.CreateUser;
-using Brewdude.Application.User.Commands.DeleteUser;
-using Brewdude.Application.User.Commands.UpdateUser;
-using Brewdude.Application.User.Queries.GetUserById;
-using Brewdude.Application.User.Queries.GetUserByUsername;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Web.Controllers
 {
+    using System.Threading.Tasks;
+    using Application.User.Commands.CreateUser;
+    using Application.User.Commands.DeleteUser;
+    using Application.User.Commands.UpdateUser;
+    using Application.User.Queries.GetUserById;
+    using Application.User.Queries.GetUserByUsername;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+
     public class UserController : BrewdudeControllerBase
     {
         private readonly ILogger<UserController> _logger;
@@ -36,8 +34,7 @@ namespace Brewdude.Web.Controllers
             _logger.LogInformation($"Processing login attempt for user {request.Username}");
             return Ok(await Mediator.Send(new GetUserByUsernameCommand(request.Username, request.Password)));
         }
-        
-        
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult> GetUserById(string id)

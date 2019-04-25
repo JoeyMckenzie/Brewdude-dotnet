@@ -1,20 +1,19 @@
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Application.Security;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.Entities;
-using Brewdude.Domain.ViewModels;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Internal;
-
 namespace Brewdude.Application.User.Queries.GetUserById
 {
+    using System;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Common.Extensions;
+    using Domain.Api;
+    using Domain.Entities;
+    using Domain.ViewModels;
+    using MediatR;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore.Internal;
+    using Security;
+
     public class GetUserByIdCommandHandler : IRequestHandler<GetUserByIdCommand, BrewdudeApiResponse<UserViewModel>>
     {
         private readonly UserManager<BrewdudeUser> _userManager;
@@ -31,10 +30,12 @@ namespace Brewdude.Application.User.Queries.GetUserById
         public async Task<BrewdudeApiResponse<UserViewModel>> Handle(GetUserByIdCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            
+
             if (user == null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.UserNotFound, $"User [{request.UserId}] does not exist");
-            
+            }
+
             var userRoles = await _userManager.GetRolesAsync(user);
             Role userRole;
             if (userRoles.Any())
@@ -50,7 +51,7 @@ namespace Brewdude.Application.User.Queries.GetUserById
             {
                 userRole = Role.User;
             }
-            
+
             // Generate a token for immediate use
             var token = _tokenService.CreateToken(user, userRole);
             if (string.IsNullOrWhiteSpace(token))
@@ -58,7 +59,7 @@ namespace Brewdude.Application.User.Queries.GetUserById
                 // Throw on token create error
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, "Token generation failed during user login");
             }
-            
+
             var userViewModel = _mapper.Map<UserViewModel>(user);
             userViewModel.Token = token;
 

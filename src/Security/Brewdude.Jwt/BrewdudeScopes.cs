@@ -1,19 +1,10 @@
-using System.Collections.Generic;
-using System.Globalization;
-
 namespace Brewdude.Jwt
 {
+    using System.Collections.Generic;
+    using System.Globalization;
+
     public class BrewdudeScopes
     {
-        public string ReadBeer { get; }
-        public string WriteBeer { get; }
-        public string ReadBrewery { get; }
-        public string WriteBrewery { get; }
-        public string ReadUserBeer { get; }
-        public string WriteUserBeer { get; }
-        public string ReadUserBrewery { get; }
-        public string WriteUserBrewery { get; }
-
         public BrewdudeScopes()
         {
             // Construct scopes at runtime
@@ -26,6 +17,23 @@ namespace Brewdude.Jwt
             ReadUserBrewery = "read:userbrewery";
             WriteUserBrewery = "write:userbrewery";
         }
+
+        public string ReadBeer { get; }
+
+        public string WriteBeer { get; }
+
+        public string ReadBrewery { get; }
+
+        public string WriteBrewery { get; }
+
+        public string ReadUserBeer { get; }
+
+        public string WriteUserBeer { get; }
+
+        public string ReadUserBrewery { get; }
+
+        public string WriteUserBrewery { get; }
+
 
         public IEnumerable<string> GetAllScopes()
         {
@@ -44,7 +52,9 @@ namespace Brewdude.Jwt
             foreach (var scope in GetType().GetProperties())
             {
                 if (scope.Name.StartsWith("read", true, CultureInfo.InvariantCulture))
+                {
                     readScopes.Add((string) scope.GetValue(this));
+                }
             }
 
             return readScopes;
@@ -56,7 +66,9 @@ namespace Brewdude.Jwt
             foreach (var scope in GetType().GetProperties())
             {
                 if (scope.Name.StartsWith("write", true, CultureInfo.InvariantCulture))
+                {
                     writeScopes.Add((string) scope.GetValue(this));
+                }
             }
 
             return writeScopes;

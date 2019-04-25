@@ -1,19 +1,18 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.ViewModels;
-using Brewdude.Persistence;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-
 namespace Brewdude.Application.UserBreweries.Queries.GetBreweriesByUserId
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Common.Extensions;
+    using Domain.Api;
+    using Domain.ViewModels;
+    using MediatR;
+    using Microsoft.EntityFrameworkCore;
+    using Persistence;
+
     public class GetBreweriesByUserIdQueryHandler : IRequestHandler<GetBreweriesByUserIdQuery, BrewdudeApiResponse<UserBreweryListViewModel>>
     {
         private readonly BrewdudeDbContext _context;
@@ -32,14 +31,15 @@ namespace Brewdude.Application.UserBreweries.Queries.GetBreweriesByUserId
                 join ub in _context.UserBreweries
                     on b.BreweryId equals ub.BreweryId
                 where ub.UserId == request.UserId
-                select b
-            )
+                select b)
                 .Include(b => b.Beers)
                 .Include(b => b.Address)
                 .ToListAsync(cancellationToken);
-            
+
             if (userBreweries == null || userBreweries.Count == 0)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BreweryNotFound, $"No breweries found for user [{request.UserId}]");
+            }
 
             var userBreweriesViewModel = new UserBreweryListViewModel
             {

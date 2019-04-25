@@ -1,5 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
+// <copyright file="UserBeerListViewModel.cs" company="Brewdude">
+// Copyright (c) Brewdude. All rights reserved.
+// </copyright>
 
 namespace Brewdude.Domain.ViewModels
 {

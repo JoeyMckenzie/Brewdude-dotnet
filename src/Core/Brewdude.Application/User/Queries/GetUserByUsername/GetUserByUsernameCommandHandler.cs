@@ -1,20 +1,19 @@
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Application.Security;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.Entities;
-using Brewdude.Domain.ViewModels;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-
 namespace Brewdude.Application.User.Queries.GetUserByUsername
 {
+    using System;
+    using System.Linq;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Common.Extensions;
+    using Domain.Api;
+    using Domain.Entities;
+    using Domain.ViewModels;
+    using MediatR;
+    using Microsoft.AspNetCore.Identity;
+    using Security;
+
     public class GetUserByUsernameCommandHandler : IRequestHandler<GetUserByUsernameCommand, BrewdudeApiResponse<UserViewModel>>
     {
         private readonly UserManager<BrewdudeUser> _userManager;
@@ -36,7 +35,7 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
                 // Throw if user does not exist
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.UserNotFound, $"No user with username [{request.Username}] was found");
             }
-            
+
             // Validate the request user's password against the stored hash and salt
             var isVerifiedPassword = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!isVerifiedPassword)
@@ -61,23 +60,23 @@ namespace Brewdude.Application.User.Queries.GetUserByUsername
             {
                 userRole = Role.User;
             }
-            
+
             var token = _tokenService.CreateToken(user, userRole);
             if (string.IsNullOrWhiteSpace(token))
             {
                 // Throw on token create error
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, "Token generation failed during user creation");
             }
-            
+
             // Map the entity user to view model
             var userViewModel = _mapper.Map<UserViewModel>(user);
             userViewModel.Token = token;
             userViewModel.Role = userRole.ToString();
-            
+
             return new BrewdudeApiResponse<UserViewModel>(
-                (int)HttpStatusCode.OK, 
-                BrewdudeResponseMessage.Success.GetDescription(), 
-                userViewModel, 
+                (int)HttpStatusCode.OK,
+                BrewdudeResponseMessage.Success.GetDescription(),
+                userViewModel,
                 1);
         }
     }

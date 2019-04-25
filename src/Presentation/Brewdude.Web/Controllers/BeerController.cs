@@ -1,18 +1,18 @@
-using System.Threading.Tasks;
-using Brewdude.Application.Beer.Commands.CreateBeer;
-using Brewdude.Application.Beer.Commands.DeleteBeer;
-using Brewdude.Application.Beer.Commands.UpdateBeer;
-using Brewdude.Application.Beer.Queries.GetAllBeers;
-using Brewdude.Application.Beer.Queries.GetBeerById;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain.Api;
-using Brewdude.Middleware.Filters;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Web.Controllers
 {
+    using System.Threading.Tasks;
+    using Application.Beer.Commands.CreateBeer;
+    using Application.Beer.Commands.DeleteBeer;
+    using Application.Beer.Commands.UpdateBeer;
+    using Application.Beer.Queries.GetAllBeers;
+    using Application.Beer.Queries.GetBeerById;
+    using Common.Extensions;
+    using Domain.Api;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Middleware.Filters;
+
     [Authorize(Policy = "BrewdudeUserPolicy")]
     [ModelStateValidationActionFilter]
     public class BeerController : BrewdudeControllerBase

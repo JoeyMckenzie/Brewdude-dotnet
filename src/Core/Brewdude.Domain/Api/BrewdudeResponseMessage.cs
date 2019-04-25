@@ -1,8 +1,8 @@
-using System.ComponentModel;
-using Brewdude.Common.Constants;
-
 namespace Brewdude.Domain.Api
 {
+    using System.ComponentModel;
+    using Common.Constants;
+
     public enum BrewdudeResponseMessage
     {
         [Description(BrewdudeConstants.SuccessfulRequestMessage)]

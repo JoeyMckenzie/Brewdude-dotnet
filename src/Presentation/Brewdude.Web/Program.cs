@@ -1,35 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using Brewdude.Persistence;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-using SQLitePCL;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
-namespace Brewdude.Web
+﻿namespace Brewdude.Web
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+    using Serilog;
+
     public class Program
     {
         public static void Main(string[] args)
         {
-//            Log.Logger = new LoggerConfiguration()
-//                .MinimumLevel.Debug()
-//                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-//                .Enrich.FromLogContext()
-//                .WriteTo.File("../../../logs/Brewdude-.log", rollingInterval: RollingInterval.Month)
-//                .CreateLogger();
-//            Log.Logger = new LoggerConfiguration()
-//                .WriteTo.Console()
-//                .WriteTo.Seq("http://localhost:5341")
-//                .CreateLogger();
+            // Log.Logger = new LoggerConfiguration()
+            //     .MinimumLevel.Debug()
+            //     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            //     .Enrich.FromLogContext()
+            //     .WriteTo.File("../../../logs/Brewdude-.log", rollingInterval: RollingInterval.Month)
+            //     .CreateLogger();
+            // Log.Logger = new LoggerConfiguration()
+            //     .WriteTo.Console()
+            //     .WriteTo.Seq("http://localhost:5341")
+            //     .CreateLogger();
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true, true)
                 .Build();
@@ -37,7 +32,7 @@ namespace Brewdude.Web
             var loggerConfiguration = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
-            
+
             var host = CreateWebHostBuilder(args).Build();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -102,10 +97,10 @@ namespace Brewdude.Web
                     logging.AddDebug();
                 })
                 .UseStartup<Startup>();
-        
+
         private static bool IsDatabaseRerollEnabled(string[] args, string environment)
         {
-            if (!string.IsNullOrWhiteSpace(environment) && environment.Equals("Development"))
+            if (!string.IsNullOrWhiteSpace(environment) && environment.Equals("Development", StringComparison.CurrentCultureIgnoreCase))
             {
                 if (args.Any(arg => arg == "reroll"))
                 {

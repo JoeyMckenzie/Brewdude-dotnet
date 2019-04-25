@@ -1,62 +1,50 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Application.Beer.Commands.CreateBeer;
-using Brewdude.Application.Beer.Commands.DeleteBeer;
-using Brewdude.Application.Beer.Commands.UpdateBeer;
-using Brewdude.Application.Beer.Queries.GetAllBeers;
-using Brewdude.Application.Beer.Queries.GetBeerById;
-using Brewdude.Application.Brewery.Commands.CreateBrewery;
-using Brewdude.Application.Brewery.Commands.DeleteBrewery;
-using Brewdude.Application.Brewery.Commands.UpdateBrewery;
-using Brewdude.Application.Brewery.Queries.GetAllBreweries;
-using Brewdude.Application.Brewery.Queries.GetBreweryById;
-using Brewdude.Application.Infrastructure;
-using Brewdude.Application.Infrastructure.AutoMapper;
-using Brewdude.Application.Security;
-using Brewdude.Application.User.Commands.CreateUser;
-using Brewdude.Application.User.Queries.GetUserById;
-using Brewdude.Application.User.Queries.GetUserByUsername;
-using Brewdude.Application.UserBeers.Commands.CreateUserBeer;
-using Brewdude.Application.UserBeers.Queries.GetBeersByUserId;
-using Brewdude.Application.UserBreweries.Commands;
-using Brewdude.Common;
-using Brewdude.Domain.Entities;
-using Brewdude.Infrastructure;
-using Brewdude.Jwt;
-using Brewdude.Jwt.Services;
-using Brewdude.Persistence;
-using Brewdude.Web.Infrastructure;
-using FluentValidation.AspNetCore;
-using HealthChecks.UI.Client;
-using MediatR;
-using MediatR.Pipeline;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Serilog;
-
-namespace Brewdude.Web
+﻿namespace Brewdude.Web
 {
+    using System;
+    using System.IO;
+    using System.Net;
+    using System.Reflection;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Application;
+    using Application.Security;
+    using Application.User.Commands.CreateUser;
+    using AutoMapper;
+    using Brewdude.Application.Infrastructure;
+    using Brewdude.Application.Infrastructure.AutoMapper;
+    using Common.Constants;
+    using Common.Utilities;
+    using Domain.Entities;
+    using FluentValidation.AspNetCore;
+    using HealthChecks.UI.Client;
+    using Infrastructure;
+    using Jwt;
+    using Jwt.Services;
+    using MediatR;
+    using MediatR.Pipeline;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Tokens;
+    using Middleware.Infrastructure;
+    using Newtonsoft.Json;
+    using Persistence;
+    using Serilog;
+    using Swashbuckle.AspNetCore.Swagger;
+
     public class Startup
     {
-        private string _jwtSecret;
         private readonly ILogger<Startup> _logger;
-        
+        private string _jwtSecret;
+
         public Startup(IConfiguration configuration, ILogger<Startup> logger)
         {
             Configuration = configuration;
@@ -70,27 +58,6 @@ namespace Brewdude.Web
         {
             _jwtSecret = Configuration["Brewdude:JwtSecret"];
             var jwtSigningSecret = Encoding.ASCII.GetBytes(_jwtSecret);
-            
-            // Register query handler assemblies
-            var assemblies = new[]
-            {
-                typeof(GetAllBeersQueryHandler).GetTypeInfo().Assembly,
-                typeof(GetBeerByIdQueryHandler).GetTypeInfo().Assembly,
-                typeof(GetBeersByUserIdQueryHandler).GetTypeInfo().Assembly,
-                typeof(CreateBeerCommandHandler).GetTypeInfo().Assembly,
-                typeof(DeleteBeerCommandHandler).GetTypeInfo().Assembly,
-                typeof(UpdateBeerCommandHandler).GetTypeInfo().Assembly,
-                typeof(GetAllBreweriesQueryHandler).GetTypeInfo().Assembly,
-                typeof(GetBreweryByIdQueryHandler).GetTypeInfo().Assembly,
-                typeof(CreateUserCommandHandler).GetTypeInfo().Assembly,
-                typeof(CreateBreweryCommandHandler).GetTypeInfo().Assembly,
-                typeof(UpdateBreweryCommandHandler).GetTypeInfo().Assembly,
-                typeof(DeleteBreweryCommandHandler).GetTypeInfo().Assembly,
-                typeof(GetUserByIdCommandHandler).GetTypeInfo().Assembly,
-                typeof(GetUserByUsernameCommandHandler).GetTypeInfo().Assembly,
-                typeof(CreateUserBeerCommandHandler).GetTypeInfo().Assembly,
-                typeof(CreateUserBreweryCommandHandler).GetTypeInfo().Assembly
-            };
 
             // Add services
             services.AddAutoMapper(typeof(MappingProfile).GetTypeInfo().Assembly);
@@ -101,7 +68,7 @@ namespace Brewdude.Web
                 loggingBuilder.AddSerilog();
                 loggingBuilder.AddSeq(Configuration.GetSection("Seq"));
             });
-            
+
             // Add EF Core
             services.AddDbContext<BrewdudeDbContext>(options =>
                 options.UseSqlServer(Configuration["Brewdude:ConnectionString"]));
@@ -111,14 +78,14 @@ namespace Brewdude.Web
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<BrewdudeDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             // Add MediatR
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestLogger<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestValidationBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RequestPerformanceBehavior<,>));
-            services.AddMediatR(assemblies);
-            
+            services.AddMediatR(BrewdudeRequestHandlers.GetRequestHandlerAssemblies());
+
             // Add JWT authentication
             services.AddAuthentication(options =>
             {
@@ -133,18 +100,20 @@ namespace Brewdude.Web
                     {
                         var userContext = context.HttpContext.RequestServices.GetRequiredService<BrewdudeDbContext>();
                         var userId = context.Principal?.Identity?.Name;
-                        
+
                         // No userId found on token
                         if (userId == null)
+                        {
                             return Task.CompletedTask;
-                        
+                        }
+
                         var user = userContext.Users.Find(userId);
                         if (user == null)
                         {
                             // Return unauthorized if user no longer exists
                             _logger.LogError($"User with userId [{userId}] no longer exists");
                             context.Fail("Unauthorized");
-                        }  
+                        }
                         return Task.CompletedTask;
                     }
                 };
@@ -163,10 +132,10 @@ namespace Brewdude.Web
             {
                 options.AddPolicy("WriteBreweryPolicy", policyBuilder =>
                     policyBuilder.RequireClaim("scopes", new BrewdudeScopes().WriteBrewery));
-                
+
                 options.AddPolicy("WriteBeerPolicy", policyBuilder =>
                     policyBuilder.RequireClaim("scopes", new BrewdudeScopes().WriteBeer));
-                
+
                 options.AddPolicy("BrewdudeUserPolicy", policyBuilder =>
                 {
                     policyBuilder.RequireAuthenticatedUser();
@@ -192,10 +161,27 @@ namespace Brewdude.Web
                     // Only need to register one validators, as they all stem from the same assembly
                     fv.RegisterValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
                 });
-            
+
+            // Add Swagger
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Info
+                {
+                    Title = "Brewdude API",
+                    Version = "v1",
+                    Description = "API endpoints for the Brewdude application.",
+                    Contact = new Contact
+                    {
+                        Name = "Joey Mckenzie",
+                        Email = "joey.mckenzie27@gmail.com",
+                        Url = "https://azurewebsites.joeymckenzie.com"
+                    }
+                });
+            });
+
             // Override built in model state validation
             services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
-            
+
             // Add health checks
             services.AddHealthChecks()
                 .AddSqlServer(Configuration["Brewdude:ConnectionString"]);
@@ -230,7 +216,7 @@ namespace Brewdude.Web
                                 TimeStamp = DateTime.UtcNow,
                                 Message = error.Message
                             };
-                            
+
                             using (var writer = new StreamWriter(context.Response.Body))
                             {
                                 new JsonSerializer().Serialize(writer, errorResponse);
@@ -243,29 +229,33 @@ namespace Brewdude.Web
 
             // Seed roles in the database
             CreateRoles(serviceProvider).Wait();
-            
+
             // Configure CORS policy
             app.UseCors(o => o
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
-            
+
             // Configure health checks
-            app.UseHealthChecks("/health", new HealthCheckOptions()
+            app.UseHealthChecks("/health", new HealthCheckOptions
             {
                 Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
             app.UseHealthChecksUI();
 
             // Configure the error handling pipeline and Identity authentication
             app.UseErrorHandlingMiddleware();
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+                options.SwaggerEndpoint("/swagger/v1/swagger.json",
+                    $"Brewdude API version {BrewdudeConstants.Version}"));
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
-        
+
         /// <summary>
         /// Seed the user roles on application startup from the roles in the domain model.
         /// </summary>
@@ -273,7 +263,7 @@ namespace Brewdude.Web
         /// <returns>Completed task</returns>
         private static async Task CreateRoles(IServiceProvider serviceProvider)
         {
-            //initializing custom roles 
+            // Initializing custom roles
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             string[] roles = { Role.User.ToString(), Role.Admin.ToString() };
 

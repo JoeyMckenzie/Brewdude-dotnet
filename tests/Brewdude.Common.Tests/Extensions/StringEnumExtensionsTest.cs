@@ -23,7 +23,7 @@ namespace Brewdude.Common.Tests.Extensions
                 "Brendan Frasier at his hunkiest",
                 "Danny Ocean is in for one last job with his buddy Bradley Pitts"
             };
-            
+
             // Act
             var description = movie.GetDescription();
 

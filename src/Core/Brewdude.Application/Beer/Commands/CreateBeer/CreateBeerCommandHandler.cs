@@ -1,19 +1,18 @@
-using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Brewdude.Common;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Persistence;
-using FluentValidation;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Application.Beer.Commands.CreateBeer
 {
+    using System;
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Common.Extensions;
+    using Common.Utilities;
+    using Domain.Api;
+    using Domain.Entities;
+    using MediatR;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+
     public class CreateBeerCommandHandler : IRequestHandler<CreateBeerCommand, BrewdudeApiResponse>
     {
         private readonly ILogger<CreateBeerCommandHandler> _logger;
@@ -30,19 +29,22 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
         public async Task<BrewdudeApiResponse> Handle(CreateBeerCommand request, CancellationToken cancellationToken)
         {
             // Validate beer to be added does not already exist
-            var existingBeer = await _context.Beers.SingleOrDefaultAsync(b =>
-                string.Equals(b.Name, request.Name, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
-            
+            var existingBeer = await _context.Beers.FirstOrDefaultAsync(b => string.Equals(b.Name, request.Name, StringComparison.CurrentCultureIgnoreCase), cancellationToken);
+
             if (existingBeer != null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BadRequest, $"Beer with name [{request.Name}] already exists");
-            
+            }
+
             // Validate an existing brewery to add the beer
             var existingBrewery = await _context.Breweries.FindAsync(request.BreweryId);
-            
+
             if (existingBrewery == null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.BadRequest, BrewdudeResponseMessage.BreweryNotFound, $"No brewery with ID [{request.BreweryId}] was found");
-            
-            var beer = new Domain.Entities.Beer
+            }
+
+            var beer = new Beer
             {
                 Name = request.Name,
                 Abv = request.Abv,
@@ -56,7 +58,8 @@ namespace Brewdude.Application.Beer.Commands.CreateBeer
 
             _context.Beers.Add(beer);
             await _context.SaveChangesAsync(cancellationToken);
-            
+            _logger.LogInformation($"Beer [{request.Name}] added successfully");
+
             return new BrewdudeApiResponse((int)HttpStatusCode.Created, BrewdudeResponseMessage.Created.GetDescription());
         }
     }

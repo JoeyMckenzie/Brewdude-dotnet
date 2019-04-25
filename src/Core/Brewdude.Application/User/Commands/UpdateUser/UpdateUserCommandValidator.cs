@@ -1,9 +1,9 @@
-using Brewdude.Application.Helpers;
-using Brewdude.Common.Constants;
-using FluentValidation;
-
 namespace Brewdude.Application.User.Commands.UpdateUser
 {
+    using Common.Constants;
+    using FluentValidation;
+    using Helpers;
+
     public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     {
         public UpdateUserCommandValidator()
@@ -11,20 +11,19 @@ namespace Brewdude.Application.User.Commands.UpdateUser
             RuleFor(u => u.UserId)
                 .NotEmpty()
                 .NotNull();
-            
+
             RuleFor(u => u.UpdatedEmail)
                 .NotEmpty()
                 .EmailAddress();
-            
+
             RuleFor(u => u.UpdatedFirstName)
-                .Custom(CustomValidationHandlers.ValidNameHandler)
-                .NotEmpty()
-                .MaximumLength(BrewdudeConstants.MaxNameLength);
-            
+                .MaximumLength(BrewdudeConstants.MaxNameLength)
+                .HasValidName();
+
+
             RuleFor(u => u.UpdatedLastName)
-                .Custom(CustomValidationHandlers.ValidNameHandler)
-                .NotEmpty()
-                .MaximumLength(BrewdudeConstants.MaxNameLength);
+                .MaximumLength(BrewdudeConstants.MaxNameLength)
+                .HasValidName();
         }
     }
 }

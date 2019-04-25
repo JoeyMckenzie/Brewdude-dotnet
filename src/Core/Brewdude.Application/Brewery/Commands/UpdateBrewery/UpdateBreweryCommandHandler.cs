@@ -1,18 +1,17 @@
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Brewdude.Common;
-using Brewdude.Common.Extensions;
-using Brewdude.Domain;
-using Brewdude.Domain.Api;
-using Brewdude.Domain.Entities;
-using Brewdude.Persistence;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
 namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
 {
+    using System.Net;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Common.Extensions;
+    using Common.Utilities;
+    using Domain.Api;
+    using Domain.Entities;
+    using MediatR;
+    using Microsoft.Extensions.Logging;
+    using Persistence;
+
     public class UpdateBreweryCommandHandler : IRequestHandler<UpdateBreweryCommand, BrewdudeApiResponse>
     {
         private readonly ILogger<UpdateBreweryCommandHandler> _logger;
@@ -33,7 +32,9 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
             var breweryToUpdate = await _context.Breweries.FindAsync(request.BreweryId);
 
             if (breweryToUpdate == null)
+            {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BreweryNotFound, $"Brewery [{request.BreweryId}] not found to update");
+            }
 
             // Update brewery values
             breweryToUpdate.Name = request.Name;
@@ -41,7 +42,7 @@ namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
             breweryToUpdate.Address = _mapper.Map<Address>(request.AddressDto);
             breweryToUpdate.UpdatedAt = _dateTime.Now;
             breweryToUpdate.Website = string.IsNullOrWhiteSpace(request.Website) ? string.Empty : request.Website;
-            
+
             await _context.SaveChangesAsync(cancellationToken);
             _logger.LogInformation($"Successfully updated brewery with ID [{request.BreweryId}]");
 
