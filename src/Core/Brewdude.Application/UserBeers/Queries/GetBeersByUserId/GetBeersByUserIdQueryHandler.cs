@@ -31,8 +31,7 @@ namespace Brewdude.Application.UserBeers.Queries.GetBeersByUserId
                 join ub in _context.UserBeers
                     on b.BeerId equals ub.BeerId
                 where ub.UserId == request.UserId
-                select b
-            ).ToListAsync(cancellationToken);
+                select b).ToListAsync(cancellationToken);
 
             if (userBeers == null || userBeers.Count == 0)
             {

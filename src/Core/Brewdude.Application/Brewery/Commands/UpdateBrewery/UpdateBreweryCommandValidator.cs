@@ -1,9 +1,6 @@
-using System;
-using Brewdude.Common.Constants;
-using FluentValidation;
-
 namespace Brewdude.Application.Brewery.Commands.UpdateBrewery
 {
+    using FluentValidation;
     using Helpers;
 
     public class UpdateBreweryCommandValidator : AbstractValidator<UpdateBreweryCommand>

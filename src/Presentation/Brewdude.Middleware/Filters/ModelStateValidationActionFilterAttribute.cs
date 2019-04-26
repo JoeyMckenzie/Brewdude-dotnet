@@ -28,7 +28,7 @@ namespace Brewdude.Middleware.Filters
 
                 // Instantiate the exception
                 var brewdudeApiException = new BrewdudeApiException(
-                    HttpStatusCode.BadRequest, 
+                    HttpStatusCode.BadRequest,
                     BrewdudeResponseMessage.InvalidModelState,
                     $"Invalid model state during request to [{context.Controller.GetType().Name}]. Trace ID: [{context.HttpContext.TraceIdentifier}]")
                 {

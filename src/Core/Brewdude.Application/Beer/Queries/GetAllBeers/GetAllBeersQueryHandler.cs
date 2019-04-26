@@ -20,7 +20,7 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
         private readonly BrewdudeDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetAllBeersQueryHandler(BrewdudeDbContext context, IMapper mapper, ILogger<GetAllBeersQueryHandler> logger)
+        public GetAllBeersQueryHandler(BrewdudeDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -38,7 +38,7 @@ namespace Brewdude.Application.Beer.Queries.GetAllBeers
             };
 
             return new BrewdudeApiResponse<BeerListViewModel>(
-                (int)HttpStatusCode.OK, 
+                (int)HttpStatusCode.OK,
                 BrewdudeResponseMessage.Success.GetDescription(),
                 viewModel,
                 viewModel.Count);

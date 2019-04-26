@@ -42,11 +42,11 @@ namespace Brewdude.Persistence
         {
             context.Beers.Add(new Beer
             {
-                Name = "Hexagenia", 
+                Name = "Hexagenia",
                 Description = "A kickass IPA with all the hoppy goodness a beer lover wants",
-                Abv = 7.6, 
-                Ibu = 110, 
-                BeerStyle = BeerStyle.Ipa, 
+                Abv = 7.6,
+                Ibu = 110,
+                BeerStyle = BeerStyle.Ipa,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery").BreweryId
@@ -54,11 +54,11 @@ namespace Brewdude.Persistence
 
             context.Beers.Add(new Beer
             {
-                Name = "Lazy Hazy", 
-                Description = "A hazy beer straight out of New England", 
-                Abv = 8.0, 
+                Name = "Lazy Hazy",
+                Description = "A hazy beer straight out of New England",
+                Abv = 8.0,
                 Ibu = 120,
-                BeerStyle = BeerStyle.NewEnglandIpa, 
+                BeerStyle = BeerStyle.NewEnglandIpa,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery").BreweryId
@@ -66,11 +66,11 @@ namespace Brewdude.Persistence
 
             context.Beers.Add(new Beer
             {
-                Name = "Sierra Nevada Pale Ale", 
+                Name = "Sierra Nevada Pale Ale",
                 Description = "The king of beers, Sierra Nevada's staple Pale Ale",
                 Abv = 7.6,
-                Ibu = 85, 
-                BeerStyle = BeerStyle.PaleAle, 
+                Ibu = 85,
+                BeerStyle = BeerStyle.PaleAle,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Sierra Nevada Brewing Company").BreweryId
@@ -78,11 +78,11 @@ namespace Brewdude.Persistence
 
             context.Beers.Add(new Beer
             {
-                Name = "Hoppy Lager", 
-                Description = "Our take on the classic lager with a hoppy twist", 
+                Name = "Hoppy Lager",
+                Description = "Our take on the classic lager with a hoppy twist",
                 Abv = 6.2,
-                Ibu = 75, 
-                BeerStyle = BeerStyle.Lager, 
+                Ibu = 75,
+                BeerStyle = BeerStyle.Lager,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 BreweryId = context.Breweries.FirstOrDefault(b => b.Name == "Sudwerk Brewing Company").BreweryId
@@ -97,10 +97,10 @@ namespace Brewdude.Persistence
             {
                 new Brewery
                 {
-                    Description = "One of Northern California's staple breweries", 
-                    Name = "Fall River Brewery", 
-                    CreatedAt = DateTime.UtcNow, 
-                    UpdatedAt = DateTime.UtcNow, 
+                    Description = "One of Northern California's staple breweries",
+                    Name = "Fall River Brewery",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
                     Website = "http://fallriverbrewing.com/",
                     Address = new Address
                     {
@@ -112,10 +112,10 @@ namespace Brewdude.Persistence
                 },
                 new Brewery
                 {
-                    Description = "One of America's staple micro-macro breweries", 
-                    Name = "Sierra Nevada Brewing Company", 
-                    CreatedAt = DateTime.UtcNow, 
-                    UpdatedAt = DateTime.UtcNow, 
+                    Description = "One of America's staple micro-macro breweries",
+                    Name = "Sierra Nevada Brewing Company",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
                     Website = "https://www.sierranevada.com/",
                     Address = new Address
                     {
@@ -127,10 +127,10 @@ namespace Brewdude.Persistence
                 },
                 new Brewery
                 {
-                    Description = "A Davis brewery", 
-                    Name = "Sudwerk Brewing Company", 
-                    CreatedAt = DateTime.UtcNow, 
-                    UpdatedAt = DateTime.UtcNow, 
+                    Description = "A Davis brewery",
+                    Name = "Sudwerk Brewing Company",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
                     Website = "https://sudwerkbrew.com/",
                     Address = new Address
                     {
@@ -151,7 +151,7 @@ namespace Brewdude.Persistence
             var fallRiverBrewery = context.Breweries.FirstOrDefault(b => b.Name == "Fall River Brewery");
             var sierraNevadaBrewery = context.Breweries.FirstOrDefault(b => b.Name == "Sierra Nevada Brewing Company");
             var sudwerkBrewingCompany = context.Breweries.FirstOrDefault(b => b.Name == "Sudwerk Brewing Company");
-            var breweries = new[] {fallRiverBrewery, sierraNevadaBrewery, sudwerkBrewingCompany};
+            var breweries = new[] { fallRiverBrewery, sierraNevadaBrewery, sudwerkBrewingCompany };
 
             fallRiverBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Redding").AddressId;
             sierraNevadaBrewery.AddressId = context.Addresses.FirstOrDefault(a => a.City == "Chico").AddressId;

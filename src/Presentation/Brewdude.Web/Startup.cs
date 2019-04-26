@@ -191,7 +191,7 @@
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public static void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -249,7 +249,8 @@
             app.UseErrorHandlingMiddleware();
             app.UseSwagger();
             app.UseSwaggerUI(options =>
-                options.SwaggerEndpoint("/swagger/v1/swagger.json",
+                options.SwaggerEndpoint(
+                    "/swagger/v1/swagger.json",
                     $"Brewdude API version {BrewdudeConstants.Version}"));
             app.UseAuthentication();
             app.UseHttpsRedirection();

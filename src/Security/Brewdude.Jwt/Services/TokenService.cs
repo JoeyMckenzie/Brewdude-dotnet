@@ -96,8 +96,8 @@ namespace Brewdude.Jwt.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Anonymous, "anonymous"), 
-                    new Claim(ClaimTypes.Name, "ANONYMOUS_USER"), 
+                    new Claim(ClaimTypes.Anonymous, "anonymous"),
+                    new Claim(ClaimTypes.Name, "ANONYMOUS_USER"),
                 }),
                 Issuer = "https://localhost:6001", // TODO: Modify once DNS is set
                 Audience = "https://localhost:5001",

@@ -23,7 +23,6 @@ namespace Brewdude.Persistence.Infrastructure
 
         private TContext Create(string basePath, string environmentName)
         {
-
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(basePath)
                 .AddJsonFile("appsettings.json")

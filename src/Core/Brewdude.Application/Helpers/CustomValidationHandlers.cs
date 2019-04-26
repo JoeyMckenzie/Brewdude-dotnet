@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using FluentValidation;
-
 namespace Brewdude.Application.Helpers
 {
     using System;

@@ -17,7 +17,6 @@ namespace Brewdude.Application.User.Commands.CreateUser
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
                 .HasValidName();
 
-
             RuleFor(u => u.LastName)
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
                 .HasValidName();

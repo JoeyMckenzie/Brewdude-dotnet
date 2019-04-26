@@ -40,9 +40,9 @@ namespace Brewdude.Application.Brewery.Queries.GetBreweryById
             }
 
             return new BrewdudeApiResponse<BreweryViewModel>(
-                (int)HttpStatusCode.OK, 
-                BrewdudeResponseMessage.Success.GetDescription(), 
-                _mapper.Map<BreweryViewModel>(brewery), 
+                (int)HttpStatusCode.OK,
+                BrewdudeResponseMessage.Success.GetDescription(),
+                _mapper.Map<BreweryViewModel>(brewery),
                 1);
         }
     }

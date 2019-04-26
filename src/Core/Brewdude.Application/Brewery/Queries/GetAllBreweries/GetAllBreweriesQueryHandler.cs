@@ -38,7 +38,7 @@ namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
             };
 
             return new BrewdudeApiResponse<BreweryListViewModel>(
-                (int)HttpStatusCode.OK, 
+                (int)HttpStatusCode.OK,
                 BrewdudeResponseMessage.Success.GetDescription(),
                 viewModel,
                 viewModel.Count);

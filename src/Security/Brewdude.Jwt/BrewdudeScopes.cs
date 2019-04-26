@@ -34,13 +34,12 @@ namespace Brewdude.Jwt
 
         public string WriteUserBrewery { get; }
 
-
         public IEnumerable<string> GetAllScopes()
         {
             var scopes = new HashSet<string>();
             foreach (var scope in GetType().GetProperties())
             {
-                scopes.Add((string) scope.GetValue(this));
+                scopes.Add((string)scope.GetValue(this));
             }
 
             return scopes;
@@ -53,7 +52,7 @@ namespace Brewdude.Jwt
             {
                 if (scope.Name.StartsWith("read", true, CultureInfo.InvariantCulture))
                 {
-                    readScopes.Add((string) scope.GetValue(this));
+                    readScopes.Add((string)scope.GetValue(this));
                 }
             }
 
@@ -67,7 +66,7 @@ namespace Brewdude.Jwt
             {
                 if (scope.Name.StartsWith("write", true, CultureInfo.InvariantCulture))
                 {
-                    writeScopes.Add((string) scope.GetValue(this));
+                    writeScopes.Add((string)scope.GetValue(this));
                 }
             }
 

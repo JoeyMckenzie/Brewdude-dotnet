@@ -20,7 +20,6 @@ namespace Brewdude.Application.User.Commands.UpdateUser
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
                 .HasValidName();
 
-
             RuleFor(u => u.UpdatedLastName)
                 .MaximumLength(BrewdudeConstants.MaxNameLength)
                 .HasValidName();

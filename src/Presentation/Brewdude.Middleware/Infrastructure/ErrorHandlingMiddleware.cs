@@ -73,7 +73,9 @@ namespace Brewdude.Middleware.Infrastructure
                     {
                         validationFailures = brewdudeApiException.ApiErrors.ToList();
                     }
+
                     break;
+
                 case ValidationException validationException:
                     responseMessage = BrewdudeResponseMessage.ErrorValidation.GetDescription();
                     statusCode = (int)HttpStatusCode.BadRequest;
@@ -89,7 +91,9 @@ namespace Brewdude.Middleware.Infrastructure
                         _logger.LogInformation("Validation failure to request @{validationFailure}", validationFailure);
                         validationFailures.Add(brewdudeValidationError);
                     }
+
                     break;
+
                 default:
                     responseMessage = BrewdudeResponseMessage.InternalServerError.GetDescription();
                     statusCode = (int)HttpStatusCode.InternalServerError;
