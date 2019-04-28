@@ -21,13 +21,17 @@ namespace Brewdude.Application.Infrastructure.AutoMapper
 
             CreateMap<BrewdudeUser, UserViewModel>()
                 .ForMember(u => u.Id, m => m.MapFrom(b => b.Id));
+
             CreateMap<UserViewModel, BrewdudeUser>();
 
             CreateMap<Brewery, BreweryViewModel>();
 
+            CreateMap<BreweryViewModel, Beer>();
+
             // Dtos
             CreateMap<Beer, BeerDto>()
                 .ForMember(b => b.BeerStyle, m => m.MapFrom(b => b.BeerStyle));
+
             CreateMap<BeerDto, Beer>();
 
             CreateMap<Address, AddressDto>()

@@ -5,11 +5,14 @@ namespace Brewdude.Application.UserBreweries.Commands.DeleteUserBrewery
 
     public class DeleteUserBreweryCommand : IRequest<BrewdudeApiResponse>
     {
-        public DeleteUserBreweryCommand(int userBreweryId)
+        public DeleteUserBreweryCommand(int breweryId, string userId)
         {
-            UserBreweryId = userBreweryId;
+            BreweryId = breweryId;
+            UserId = userId;
         }
 
-        public int UserBreweryId { get; }
+        public string UserId { get; set; }
+
+        public int BreweryId { get; }
     }
 }

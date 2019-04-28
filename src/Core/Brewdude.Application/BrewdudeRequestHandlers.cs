@@ -18,6 +18,7 @@ namespace Brewdude.Application
     using UserBeers.Commands.DeleteUserBeer;
     using UserBeers.Queries.GetBeersByUserId;
     using UserBreweries.Commands.CreateUserBrewery;
+    using UserBreweries.Commands.DeleteUserBrewery;
 
     public static class BrewdudeRequestHandlers
     {
@@ -41,7 +42,8 @@ namespace Brewdude.Application
                 typeof(GetUserByUsernameCommandHandler).GetTypeInfo().Assembly,
                 typeof(CreateUserBeerCommandHandler).GetTypeInfo().Assembly,
                 typeof(CreateUserBreweryCommandHandler).GetTypeInfo().Assembly,
-                typeof(DeleteUserBeerCommandHandler).GetTypeInfo().Assembly
+                typeof(DeleteUserBeerCommandHandler).GetTypeInfo().Assembly,
+                typeof(DeleteUserBreweryCommandHandler).GetTypeInfo().Assembly,
             };
         }
     }

@@ -36,7 +36,7 @@ namespace Brewdude.Application.UserBreweries.Queries.GetBreweriesByUserId
                 .Include(b => b.Address)
                 .ToListAsync(cancellationToken);
 
-            if (userBreweries == null || userBreweries.Count == 0)
+            if (userBreweries == null)
             {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BreweryNotFound, $"No breweries found for user [{request.UserId}]");
             }

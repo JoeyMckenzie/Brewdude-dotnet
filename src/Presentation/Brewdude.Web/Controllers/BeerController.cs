@@ -6,8 +6,8 @@ namespace Brewdude.Web.Controllers
     using Application.Beer.Commands.UpdateBeer;
     using Application.Beer.Queries.GetAllBeers;
     using Application.Beer.Queries.GetBeerById;
-    using Common.Extensions;
-    using Domain.Api;
+    using Application.Beer.Queries.GetBeerByName;
+    using Application.Beer.Queries.GetBeersByBeerStyle;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -18,38 +18,46 @@ namespace Brewdude.Web.Controllers
     public class BeerController : BrewdudeControllerBase
     {
         private readonly ILogger<BeerController> _logger;
-        private readonly string _userIdOnRequest;
 
         public BeerController(ILogger<BeerController> logger)
         {
             _logger = logger;
-            _userIdOnRequest = string.Empty;
-            if (User?.Identity != null)
-            {
-                _userIdOnRequest = User.Identity.Name;
-            }
         }
 
         [HttpGet]
         public async Task<ActionResult> GetAllBeers()
         {
-            _logger.LogInformation($"Retrieving all beers for user [{_userIdOnRequest}]");
+            _logger.LogInformation($"Retrieving all beers for user [{User.Identity?.Name}]");
             return Ok(await Mediator.Send(new GetAllBeersQuery()));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> GetById(int id)
         {
-            _logger.LogInformation($"Retrieving beer [{id}] for user [{_userIdOnRequest}]");
+            _logger.LogInformation($"Retrieving beer [{id}] for user [{User.Identity?.Name}]");
             return Ok(await Mediator.Send(new GetBeerByIdQuery(id)));
+        }
+
+        [HttpGet("search/name")]
+        public async Task<ActionResult> GetBeerByName(string beerName)
+        {
+            _logger.LogInformation($"Searching for beer [{beerName}] for user [{User.Identity?.Name}]");
+            return Ok(await Mediator.Send(new GetBeerByNameQuery(beerName)));
+        }
+
+        [HttpGet("search/style")]
+        public async Task<ActionResult> GetBeerByBeerStyle(string style)
+        {
+            _logger.LogInformation($"Searching for style [{style}] for user [{User.Identity?.Name}]");
+            return Ok(await Mediator.Send(new GetBeersByBeerStyleQuery(style)));
         }
 
         [HttpPost]
         [Authorize("WriteBeerPolicy")]
         public async Task<ActionResult> CreateBeer([FromBody] CreateBeerCommand createBeerCommand)
         {
-            _logger.LogInformation($"Creating beer [{createBeerCommand.Name}] for user [{_userIdOnRequest}]");
-            return Created(BrewdudeResponseMessage.Created.GetDescription(), await Mediator.Send(createBeerCommand));
+            _logger.LogInformation($"Creating beer [{createBeerCommand.Name}] for user [{User.Identity?.Name}]");
+            return Ok(await Mediator.Send(createBeerCommand));
         }
 
         [HttpPut("{id}")]

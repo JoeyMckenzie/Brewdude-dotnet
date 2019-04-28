@@ -20,25 +20,25 @@ namespace Brewdude.Web.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetBeersByUserId(string id)
+        [HttpGet("{userId}")]
+        public async Task<ActionResult> GetBeersByUserId(string userId)
         {
-            _logger.LogInformation($"Retrieving beers for user [{id}]");
-            return Ok(await Mediator.Send(new GetBeersByUserIdQuery(id)));
+            _logger.LogInformation($"Retrieving beers for user [{userId}]");
+            return Ok(await Mediator.Send(new GetBeersByUserIdQuery(userId)));
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUserBeer(CreateUserBeerCommand command)
+        public async Task<ActionResult> CreateUserBeer([FromBody] CreateUserBeerCommand command)
         {
             _logger.LogInformation($"Creating beer [{command.BeerId}] for user [{command.UserId}]");
-            return Created(BrewdudeResponseMessage.Created.GetDescription(), await Mediator.Send(command));
+            return Ok(await Mediator.Send(command));
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteUserBeer(int id)
+        [HttpDelete]
+        public async Task<ActionResult> DeleteUserBeer([FromBody] DeleteUserBeerCommand command)
         {
-            _logger.LogInformation($"Deleting beer [{id}] for user [{User.Identity.Name}]");
-            return Ok(await Mediator.Send(new DeleteUserBeerCommand(id, User.Identity.Name)));
+            _logger.LogInformation($"Deleting beer [{command.UserId}] for user [{command.UserId}]");
+            return Ok(await Mediator.Send(command));
         }
     }
 }

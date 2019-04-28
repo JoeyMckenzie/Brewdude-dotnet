@@ -2,6 +2,7 @@ namespace Brewdude.Web.Controllers
 {
     using System.Threading.Tasks;
     using Application.UserBreweries.Commands.CreateUserBrewery;
+    using Application.UserBreweries.Commands.DeleteUserBrewery;
     using Application.UserBreweries.Queries.GetBreweriesByUserId;
     using Common.Extensions;
     using Domain.Api;
@@ -27,10 +28,17 @@ namespace Brewdude.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUserBrewery(CreateUserBreweryCommand command)
+        public async Task<ActionResult> CreateUserBrewery([FromBody] CreateUserBreweryCommand command)
         {
             _logger.LogInformation($"Creating brewery [{command.BreweryId}] for user [{command.UserId}]");
-            return Created(BrewdudeResponseMessage.Created.GetDescription(), await Mediator.Send(command));
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteUserBrewery([FromBody] DeleteUserBreweryCommand command)
+        {
+            _logger.LogInformation($"Delete brewery [{command.BreweryId}] for user [{command.UserId}]");
+            return Ok(await Mediator.Send(command));
         }
     }
 }

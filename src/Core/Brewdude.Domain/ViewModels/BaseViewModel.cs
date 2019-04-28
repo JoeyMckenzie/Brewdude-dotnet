@@ -2,6 +2,7 @@ namespace Brewdude.Domain.ViewModels
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Common.Constants;
 
     public class BaseViewModel
     {
@@ -13,5 +14,7 @@ namespace Brewdude.Domain.ViewModels
         public IEnumerable<T> Results { get; set; }
 
         public int Count => Results.Count();
+
+        public int Pages => (Count / BrewdudeConstants.MaxSearchResults) + 1;
     }
 }

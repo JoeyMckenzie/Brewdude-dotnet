@@ -33,7 +33,7 @@ namespace Brewdude.Application.UserBeers.Queries.GetBeersByUserId
                 where ub.UserId == request.UserId
                 select b).ToListAsync(cancellationToken);
 
-            if (userBeers == null || userBeers.Count == 0)
+            if (userBeers == null)
             {
                 throw new BrewdudeApiException(HttpStatusCode.NotFound, BrewdudeResponseMessage.BeerNotFound, $"Could not find beers for user [{request.UserId}]");
             }

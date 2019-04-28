@@ -11,6 +11,7 @@ namespace Brewdude.Common.Constants
     {
         // Meta constants
         public const string Version = "0.1.0-beta";
+        public const int MaxSearchResults = 25;
 
         // Response messages
         public const string SuccessfulRequestMessage = "Request was successful";

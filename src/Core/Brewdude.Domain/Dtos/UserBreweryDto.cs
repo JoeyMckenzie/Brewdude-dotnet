@@ -5,7 +5,7 @@ namespace Brewdude.Domain.Dtos
     /// <summary>
     /// User brewery data transfer object used within the application layer.
     /// </summary>
-    public abstract class UserBreweryDto
+    public class UserBreweryDto
     {
         /// <summary>
         /// Gets or sets the brewery ID pertaining to the user.

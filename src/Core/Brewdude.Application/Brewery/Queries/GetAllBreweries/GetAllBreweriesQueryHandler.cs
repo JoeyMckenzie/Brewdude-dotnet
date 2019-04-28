@@ -34,7 +34,7 @@ namespace Brewdude.Application.Brewery.Queries.GetAllBreweries
 
             var viewModel = new BreweryListViewModel
             {
-                Breweries = _mapper.Map<IEnumerable<BreweryViewModel>>(breweries),
+                Results = _mapper.Map<IEnumerable<BreweryViewModel>>(breweries),
             };
 
             return new BrewdudeApiResponse<BreweryListViewModel>(

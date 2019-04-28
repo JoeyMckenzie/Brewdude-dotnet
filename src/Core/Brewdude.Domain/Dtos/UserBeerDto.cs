@@ -3,7 +3,7 @@ namespace Brewdude.Domain.Dtos
     /// <summary>
     /// User beer data transfer object used within the application layer.
     /// </summary>
-    public abstract class UserBeerDto
+    public class UserBeerDto
     {
         /// <summary>
         /// Gets or sets the beer ID primary key.

@@ -4,7 +4,7 @@ namespace Brewdude.Application.Brewery.Commands.CreateBrewery
     using Domain.Dtos;
     using MediatR;
 
-    public abstract class CreateBreweryCommand : IRequest<BrewdudeApiResponse>
+    public class CreateBreweryCommand : IRequest<BrewdudeApiResponse>
     {
         public string Name { get; set; }
 

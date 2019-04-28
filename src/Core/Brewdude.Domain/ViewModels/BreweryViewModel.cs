@@ -6,7 +6,7 @@ namespace Brewdude.Domain.ViewModels
     /// <summary>
     /// Brewery view model used within the application layer.
     /// </summary>
-    public abstract class BreweryViewModel : BaseViewModel
+    public class BreweryViewModel : BaseViewModel
     {
         protected BreweryViewModel()
         {
