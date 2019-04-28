@@ -4,8 +4,6 @@ namespace Brewdude.Web.Controllers
     using Application.UserBeers.Commands.CreateUserBeer;
     using Application.UserBeers.Commands.DeleteUserBeer;
     using Application.UserBeers.Queries.GetBeersByUserId;
-    using Common.Extensions;
-    using Domain.Api;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;

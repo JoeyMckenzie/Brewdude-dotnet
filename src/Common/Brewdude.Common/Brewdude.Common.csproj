@@ -14,10 +14,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\..\..\StyleCop.json">
-      <Link>StyleCop.json</Link>
-    </Content>
-  </ItemGroup>
-
 </Project>
